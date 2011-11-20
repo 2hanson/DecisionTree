@@ -167,7 +167,7 @@ void MallocMemory()
     }
 }
 
-int map_str_to_num(int i, char *str)
+int MapStr2Num(int i, char *str)
 {
 	if (i >= attributeNum) {
 		return -1;
@@ -202,10 +202,10 @@ int ConvertRawData2Map(int flag)
     }
 	/* analyse input data(raw data) */
 	for (j = 1; j <= attributeNum; j++) {
-		for (i = 0; i < totalnum; i++) {
+		for (i = 1; i <= totalnum; i++) {
 			ptr = list;
 			while (ptr) {
-				if (strncmp(ptr->str, rawData[i][j], MAXLEN) == 0) {
+				if (strncmp(ptr->str, rawData[i][j], MAXLEN-1) == 0) {
 					break;
 				}
 
@@ -274,17 +274,41 @@ int ConvertRawData2Map(int flag)
 	for (j = 1; j < attributeNum; j++) {
 		i = 0;
 		if (flag == 1) {
-			trainingData[i][j] = map_str_to_num(j, rawData[i][j]);
+			trainingData[i][j] = MapStr2Num(j, rawData[i][j]);
 			i++;
 		}
 
         else if(flag == 2) {
-			testData[i][j] = map_str_to_num(j, rawData[i][j]);
+			testData[i][j] = MapStr2Num(j, rawData[i][j]);
 			i++;
 		}
 	}
 
 	return 0;
+}
+
+void TestRawData(int flag)
+{
+    int num;
+    if (flag == 1)
+    {
+        num = numberOfTrainingRecord;
+    }
+    else
+    {
+        num = numberOfTestingRecord;
+    }
+    int i, j;
+    for (i = 1; i <= num; ++i)
+    {
+        for (j = 1; j <= attributeNum; ++j)
+        {
+            printf("%s      ",rawData[i][j] );
+        }
+        printf("\n");
+    }
+
+    printf("\n\n");
 }
 
 void OnReadData(char* filename, int flag/*training or testing*/)
@@ -297,7 +321,7 @@ void OnReadData(char* filename, int flag/*training or testing*/)
         exit(-1);
     }
     int i, j;
-    int n = 1024;   
+    int n = 1024; 
     char buffer[1024];
     char *begin = NULL, *end = NULL;
     int totalnum;
@@ -362,7 +386,8 @@ void OnReadData(char* filename, int flag/*training or testing*/)
         }
     }
 
-    ConvertRawData2Map(flag);
+//    ConvertRawData2Map(flag);
+    TestRawData(flag);
 }
 
 void ReadData()
@@ -401,6 +426,7 @@ void Init()
         memset(confusionMatrix[i],0,classNum*sizeof(uint32_t));
     }
     
+    //
     MallocMemory();
     ReadData();
 }
