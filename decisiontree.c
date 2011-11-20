@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 AttributeMap* map; 
 //attribute is range from 1 to attributenum. colcume 0 is the classLab
@@ -557,10 +558,123 @@ void InsertIntoInnerList(uint32_t levelNo,TreeNode* innerNode)
         totalLevel = levelNo;
 }
 
-uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap, uint32_t* pathAttributeValueMap,
-        uint32_t subpartitionnum,uint32_t slipAttribute[attributeNum],double* infogain,uint32_t* majorclass)
+uint32_t FindMaxValue(uint32_t len, double arr[])
 {
+    uint32_t i = 1, min = 1;
+    for (i = 2; i <= len; i++) {
+        if (arr[min] < arr[i])
+            min = i;
+    }
     
+    return min;
+}
+
+uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap, uint32_t* pathAttributeValueMap,
+        uint32_t subpartitionnum,uint32_t slipAttribute[attributeNum],double* infogainradio,uint32_t* majorclass)
+{
+    uint32_t attributestate[classNum];
+    uint32_t attributeclass[attributeNum][classNum];
+
+    int i, j;
+    for (i = 0; i < classNum; ++i)
+    {
+        attributestate[i] = 0;
+    }
+    double infogain[attributeNum];
+    for (i = 1; i <= attributeNum; ++i)
+    {
+        infogain[i] = 0;
+    }
+
+    infogain[0] = -100;
+    
+    for (i = 1; i <= attributeNum; ++i )
+    {
+        for (j = 0;  j < classNum; ++j)
+        {
+            attributeclass[i][j] = 0;
+        }
+    }
+
+    uint32_t * tempdata;
+    double infoGain0 = 0;
+    for(i = 1; i<=numberOfTrainingRecord; i++)
+    {
+        tempdata = trainingData[i];    
+        if(MatchAttribute(levelNo,tempdata,pathAttributeNameMap,pathAttributeValueMap)!=0)
+            attributestate[tempdata[0]]++;
+    }
+
+    //calcute the InfoGain
+    for (i = 0; i < classNum; ++i)
+    {
+        if (attributestate[i] != 0)
+        {
+            infoGain0 += ((double)attributestate[i]/subpartitionnum)*((log2((double)attributestate[i]/subpartitionnum))*(-1));
+        }
+    }
+    double infoSum, partSum, logSum, spitSum;
+    int k, g;
+    for (i = 1; i <= attributeNum; ++i)
+    {
+        infoSum = 0;
+        for (k = 1; k <= attributeNum; ++k)
+        {
+            for (j = 0; j < classNum; ++j)
+            {
+                attributeclass[k][j] = 0;
+            }
+        }
+
+        if (slipAttribute[i] == 1)
+        {
+            infogain[i] = -100;
+            continue;
+        }
+        else if (map[i].attributeNum <= 10) //disperse
+        {
+            for (k = 1; k <= numberOfTrainingRecord; ++k)
+            {
+                tempdata = trainingData[k];
+        
+                if(MatchAttribute(levelNo,tempdata,pathAttributeNameMap,pathAttributeValueMap)!=0) {
+                    attributeclass[tempdata[i]][tempdata[0]]++;
+                }
+            }
+            
+            spitSum = 0;
+            for (j = 0; j < map[i].attributeNum; ++j)
+            {
+                partSum = 0;
+                
+                for (g = 0; g < classNum; ++g)
+                {
+                    partSum += attributeclass[j][g];
+                }
+
+                logSum = 0;
+                for (g = 0; g < classNum; ++g)
+                {
+                    if (attributeclass[j][g] != 0)
+                    {
+                        logSum += ((double)attributeclass[j][g]/partSum)*(log2((double)attributeclass[j][g]/partSum)*(-1));
+                    }
+                }
+
+                spitSum += ((double)partSum/subpartitionnum)*(log2((double)partSum/subpartitionnum)); 
+                infoSum += ((double)partSum/subpartitionnum)*logSum; 
+            }
+
+            infogain[i] = (infoGain0 - infoSum) / spitSum;
+        }
+        else {//consecutive
+            
+        }       
+    }
+
+    uint32_t returnattributeno = FindMaxValue(attributeNum, infogain);
+    *majorclass = FindMaxClassLab(classNum, attributestate);
+    *infogainradio = infogain[returnattributeno];
 }
 
 TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[MAXLEVELNUM],
@@ -615,7 +729,7 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
         currentNode->pathAttributeValue[levelNo-1] = slipAttrValue;
     }
 
-    uint32_t subPartitionNum = 0;
+    uint32_t subPartitionNum = 0; // the count of records fellow this path.
     uint32_t * tempData = NULL;
     for (j = 1; j <= numberOfTrainingRecord; ++j)
     {
@@ -679,7 +793,7 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
     currentNode->isLeaf = 0;
     currentNode->selfLevel = levelNo;
     currentNode->pathAttributeName[levelNo] = slipAttributeNo;
-    currentNode->infoGain = infogain;
+    currentNode->infoGainRatio = infogain;
     currentNode->majorClass = majorClass;
     currentNode->childNode = NULL;
     currentNode->siblingNode = NULL;

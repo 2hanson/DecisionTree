@@ -27,6 +27,6 @@ typedef struct tree_node
     struct tree_node* preLeaf;
     struct tree_node* nextLeaf; 
     uint32_t isLeaf; 
-    double infoGain;
+    double infoGainRatio;
 }TreeNode;
 
