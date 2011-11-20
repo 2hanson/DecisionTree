@@ -398,12 +398,13 @@ void OnReadData(char* filename, int flag/*training or testing*/)
         }
         //attribute is range from 1 to attributenum.
         
-        for (j = 1; j <= attributeNum; j++) {
+        for (j = 1; j <= attributeNum-1; j++) {
             end = strchr(begin, (int)('\t'));
             if (!end)
             {
                 end = strchr(begin, (int)(' '));
             }
+
             if (!end) {
                 fprintf(stderr, "line 404 tab wasn't found.\n");
                 exit(-1);
@@ -411,7 +412,7 @@ void OnReadData(char* filename, int flag/*training or testing*/)
             memset(rawData[i][j], 0, MAXLEN);
             strncpy(rawData[i][j], begin, end - begin);
 
-            printf("haoba:  %s \n", rawData[i][j]);
+           // printf("haoba:  %s \n", rawData[i][j]);
             begin = end + 1;
         }
         end = strchr(begin, (int)('\r'));
@@ -427,6 +428,8 @@ void OnReadData(char* filename, int flag/*training or testing*/)
         else {
             strcpy(rawData[i][j], begin);
         }
+            
+        //printf("haoba:  %s \n", rawData[i][j]);
         i++;
     }
 
