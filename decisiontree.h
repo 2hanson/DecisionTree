@@ -16,7 +16,7 @@ typedef struct
 
 typedef struct tree_node 
 {
-    uint32_t leafClass;
+    uint32_t classify;
     uint32_t selfLevel;
     uint32_t majorClass;
     uint32_t pathAttributeName[MAXLEVELNUM];
