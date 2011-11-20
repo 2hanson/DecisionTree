@@ -94,6 +94,8 @@ void Read(int argc, char* argv[])
             printf("input error, please check you input\n");
         }
     }
+
+    TestRead();
 }
 
 void MallocMemory()
@@ -108,14 +110,14 @@ void MallocMemory()
         abort();
     }
 
-    for (i = 0; i < numberOfRecords; i++) {
-        rawData[i] = (char **)malloc(sizeof(char *) * (attributeNum));
+    for (i = 0; i <= numberOfRecords; i++) {
+        rawData[i] = (char **)malloc(sizeof(char *) * (attributeNum+1));
         if (!rawData[i]) {
             fprintf(stderr, "malloc memory failed, abort.\n");
             abort();
         }
         
-        for (j = 0; j < attributeNum; j++) {
+        for (j = 0; j <= attributeNum; j++) {
             rawData[i][j] = (char *)malloc(MAXLEN);
             if (!rawData[i][j]) {
                 fprintf(stderr, "malloc memory failed, abort.\n");
@@ -125,14 +127,14 @@ void MallocMemory()
     }
 
     //malloc training data
-    trainingData = (uint32_t **)malloc(sizeof(uint32_t *) * numberOfTrainingRecord);
+    trainingData = (uint32_t **)malloc(sizeof(uint32_t *) * (numberOfTrainingRecord+1));
     if (!trainingData) {
         fprintf(stderr, "malloc memory failed, abort.\n");
         abort();
     }
 
-    for (i = 0; i < numberOfTrainingRecord; i++) {
-        trainingData[i] = (int *)malloc(sizeof(int) * attributeNum);
+    for (i = 0; i <= numberOfTrainingRecord; i++) {
+        trainingData[i] = (int *)malloc(sizeof(int) *(attributeNum+1));
         if (!trainingData[i]) {
             fprintf(stderr, "malloc memory failed, abort.\n");
                 abort();
@@ -140,14 +142,14 @@ void MallocMemory()
     }
     
     /* malloc test_data */
-    testData = (uint32_t **)malloc(sizeof(uint32_t *) * numberOfTestingRecord);
+    testData = (uint32_t **)malloc(sizeof(uint32_t *) * (numberOfTestingRecord+1));
     if (!testData) {
         fprintf(stderr, "malloc memory failed, abort.\n");
         abort();
     }
     
     for (i = 0; i < numberOfTestingRecord; i++) {
-        testData[i] = (uint32_t *)malloc(sizeof(uint32_t) * attributeNum);
+        testData[i] = (uint32_t *)malloc(sizeof(uint32_t) * (1+attributeNum));
         if (!testData[i]) {
             fprintf(stderr, "malloc memory failed, abort.\n");
             abort();
@@ -163,7 +165,8 @@ void MallocMemory()
     strcpy(map[0].attributeName, "classLab");
     for (j = 1; j <= attributeNum; j++)
     {
-        strcpy(map[j].attributeName, "attribute"+i);
+        strcpy(map[j].attributeName, "attribute");
+   //     strcat(map[j].attributeName, (i+'0'));
     }
 }
 
@@ -216,7 +219,6 @@ void TestTestingData()
 
 void ConstructMap()
 {
-    
     struct str_list {
         char str[MAXLEN];
         struct str_list *next;
@@ -357,8 +359,8 @@ void OnReadData(char* filename, int flag/*training or testing*/)
     char buffer[1024];
     char *begin = NULL, *end = NULL;
     int totalnum;
-    fgets(buffer, n, fp);
-    begin = buffer;
+    //fgets(buffer, n, fp);
+    //begin = buffer;
     if (flag == 1)
     {
         totalnum = numberOfTrainingRecord;
@@ -372,56 +374,67 @@ void OnReadData(char* filename, int flag/*training or testing*/)
     while (i <= totalnum) {
         char *ptr = fgets(buffer, n, fp);
         if (!ptr) {
-            fprintf(stderr, "err.\n");
+            fprintf(stderr, "line 377 err.\n");
             exit(-1);
-            begin = buffer;
-            end = NULL;
-            for (j =0; j < 2; ++j)
-            {
-                end = strchr(begin, (int)('\t'));
-                if (!end)
-                {
-                    fprintf(stderr, "tab wasn't found");
-                    exit(-1);
-                }
-                begin = end + 1;
-            }
-
-            //attribute is range from 1 to attributenum.
-            for (j = 1; j <= attributeNum; j++) {
-                end = strchr(begin, (int)('\t'));
-                if (!end) {
-                    fprintf(stderr, "tab wasn't found.\n");
-                    exit(-1);
-                }
-
-                memset(rawData[i][j], 0, MAXLEN);
-                strncpy(rawData[i][j], begin, end - begin);
-                begin = end + 1;
-            }
-        
-            end = strchr(begin, (int)('\r'));
-        
-            if (!end) {
-                end = strchr(begin, (int)('\n'));
-            }
-        
-            memset(rawData[i][j], 0, MAXLEN);
-        
-            if (end) {
-                strncpy(rawData[i][j], begin, end - begin);
-            }
-            else {
-                strcpy(rawData[i][j], begin);
-            }
-            i++;
         }
+        begin = buffer;
+        end = NULL;
+        for (j =0; j < 2; ++j)
+        {
+            end = strchr(begin, (int)('\t'));
+            if (end)
+            {
+                begin = end+1;
+            }
+            else if ( (end = strchr(begin, (int)(' '))) )
+            {
+                begin = end+1;
+            }
+            else
+            {
+                fprintf(stderr, "line tab wasn't found");
+                exit(-1);
+            }
+        }
+        //attribute is range from 1 to attributenum.
+        
+        for (j = 1; j <= attributeNum; j++) {
+            end = strchr(begin, (int)('\t'));
+            if (!end)
+            {
+                end = strchr(begin, (int)(' '));
+            }
+            if (!end) {
+                fprintf(stderr, "line 404 tab wasn't found.\n");
+                exit(-1);
+            }
+            memset(rawData[i][j], 0, MAXLEN);
+            strncpy(rawData[i][j], begin, end - begin);
+
+            printf("haoba:  %s \n", rawData[i][j]);
+            begin = end + 1;
+        }
+        end = strchr(begin, (int)('\r'));
+        
+        if (!end) {
+            end = strchr(begin, (int)('\n'));
+        }
+        
+        memset(rawData[i][j], 0, MAXLEN);
+        if (end) {
+            strncpy(rawData[i][j], begin, end - begin);
+        }
+        else {
+            strcpy(rawData[i][j], begin);
+        }
+        i++;
     }
+
     if (flag == 1)
     {
         ConstructMap();
     }
-//    ConvertRawData2Map(flag);
+    //    ConvertRawData2Map(flag);
     TestRawData(flag);
 }
 
@@ -466,6 +479,12 @@ void Init()
     ReadData();
 }
 
+TreeNode* GenerateDecisionTree(uint32_t level_no,uint32_t level_map[MAXLEVELNUM],
+        uint32_t level_class_map[MAXLEVELNUM],uint32_t slip_attr_value)
+{
+    
+}
+
 int main(int argc, char* argv[])
 {
     TreeNode* root = NULL;
@@ -475,6 +494,7 @@ int main(int argc, char* argv[])
     printf ("%lf\n", root->infoGain);*/
     Read(argc, argv);
     Init();
+//   root = GenerateDecisionTree();
     //TestRead();
     return 0;    
 }
