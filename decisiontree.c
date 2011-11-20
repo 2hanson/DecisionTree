@@ -557,8 +557,11 @@ void InsertIntoInnerList(uint32_t levelNo,TreeNode* innerNode)
         totalLevel = levelNo;
 }
 
-uint32_t SelectAttributeByRule()
-{}
+uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap, uint32_t* pathAttributeValueMap,
+        uint32_t subpartitionnum,uint32_t slipAttribute[attributeNum],double* infogain,uint32_t* majorclass)
+{
+    
+}
 
 TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[MAXLEVELNUM],
         uint32_t pathAttributeValueMap[MAXLEVELNUM], uint32_t slipAttrValue)
@@ -669,7 +672,8 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
     uint32_t majorClass = 0;
     uint32_t slipAttributeNo = 0;
     double infogain = 0;
-    slipAttributeNo = SelectAttributeByRule();//this function have to change the value of majorclass and infogain
+    slipAttributeNo = SelectAttributeByRule(levelNo, currentNode->pathAttributeName, currentNode->pathAttributeValue,
+            subPartitionNum, slipattribute, &infogain, &majorClass);//this function have to change the value of majorclass and infogain
 
     currentNode->classify = 0;
     currentNode->isLeaf = 0;
