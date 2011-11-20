@@ -148,8 +148,8 @@ void MallocMemory()
         abort();
     }
     
-    for (i = 0; i < numberOfTestingRecord; i++) {
-        testData[i] = (uint32_t *)malloc(sizeof(uint32_t) * (1+attributeNum));
+    for (i = 0; i <= numberOfTestingRecord; i++) {
+        testData[i] = (uint32_t *)malloc(sizeof(uint32_t) * (attributeNum+1));
         if (!testData[i]) {
             fprintf(stderr, "malloc memory failed, abort.\n");
             abort();
@@ -170,9 +170,10 @@ void MallocMemory()
     }
 }
 
-int MapStr2Num(int i, char *str)
+//map.attributes range from 0 to num - 1
+int MapAttribute2Num(int i, char *str)
 {
-	if (i >= attributeNum) {
+	if (i > attributeNum) {
 		return -1;
 	}
 
@@ -324,16 +325,22 @@ int ConvertRawData2Map(int flag)
 {
     int i, j;
 	/* assign the training data and test data */
-	for (j = 1; j < attributeNum; j++) {
-		i = 0;
+	for (j = 1; j <= attributeNum; j++) {
+		i = 1;
 		if (flag == 1) {
-			trainingData[i][j] = MapStr2Num(j, rawData[i][j]);
-			i++;
+            while (i <= numberOfTrainingRecord)
+            {
+                trainingData[i][j] = MapAttribute2Num(j, rawData[i][j]);
+                i++;
+            }
 		}
 
         else if(flag == 2) {
-			testData[i][j] = MapStr2Num(j, rawData[i][j]);
-			i++;
+            while (i <= numberOfTestingRecord)
+            {
+    			testData[i][j] = MapAttribute2Num(j, rawData[i][j]);
+	    		i++;
+            }
 		}
 	}
 
@@ -457,7 +464,7 @@ void OnReadData(char* filename, int flag/*training or testing*/)
     {
         ConstructMap();
     }
-    //    ConvertRawData2Map(flag);
+    ConvertRawData2Map(flag);
     //TestRawData(flag);
 }
 
@@ -466,6 +473,9 @@ void ReadData()
     OnReadData(trainingSetFile,1);
 
     OnReadData(testingSetFile, 2);
+
+    TestTrainData();
+    TestTestingData();
 }
 
 void Init()
