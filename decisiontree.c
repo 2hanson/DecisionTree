@@ -33,6 +33,81 @@ void TestRead()
     }
 }
 
+void TestTrainData()
+{
+    printf("TestTrainingData");
+    int i, j;
+    for ( i = 1; i <= numberOfTrainingRecord; ++i)
+    {
+        for (j = 1; j <= attributeNum; ++j)
+        {
+            printf("%d   ", trainingData[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n\n");
+}
+
+void TestTestingData()
+{
+    printf("TestTestingData");
+    int i,j;
+    for (i = 1; i <= numberOfTestingRecord; ++i)
+    {
+        for (j = 1; j<= attributeNum; ++j)
+        {
+            printf("%d   ", testData[i][j]);
+        }
+        printf("\n");
+    }
+
+    printf("\n\n");
+}
+
+void TestMap()
+{
+    int j, i;
+
+    for (j = 1; j <= attributeNum; ++j)
+    {
+        printf("attri: %s: has %d attrs\n", map[j].attributeName, map[j].attributeNum);
+        
+        for (i = 0; i < map[j].attributeNum; ++i)
+        {
+            printf("%s; ", map[j].attributes[i]);
+        }
+        printf("\n");
+    }
+
+    printf("\n");
+}
+
+void TestRawData(int flag)
+{
+    printf("testRawdata");
+    int num;
+    if (flag == 1)
+    {
+        num = numberOfTrainingRecord;
+    }
+    else
+    {
+        num = numberOfTestingRecord;
+    }
+    int i, j;
+    for (i = 1; i <= num; ++i)
+    {
+        for (j = 1; j <= attributeNum; ++j)
+        {
+            printf("%s      ",rawData[i][j] );
+        }
+        printf("\n");
+    }
+
+    printf("\n\n");
+}
+
+
 int ConvertString2Number(char* str)
 {
    int retNum = 0;
@@ -187,55 +262,6 @@ int MapAttribute2Num(int i, char *str)
 	return -1;
 }
 
-void TestTrainData()
-{
-    printf("TestTrainingData");
-    int i, j;
-    for ( i = 1; i <= numberOfTrainingRecord; ++i)
-    {
-        for (j = 1; j <= attributeNum; ++j)
-        {
-            printf("%d   ", trainingData[i][j]);
-        }
-        printf("\n");
-    }
-    printf("\n\n");
-}
-
-void TestTestingData()
-{
-    printf("TestTestingData");
-    int i,j;
-    for (i = 1; i <= numberOfTestingRecord; ++i)
-    {
-        for (j = 1; j<= attributeNum; ++j)
-        {
-            printf("%d   ", testData[i][j]);
-        }
-        printf("\n");
-    }
-
-    printf("\n\n");
-}
-
-void TestMap()
-{
-    int j, i;
-
-    for (j = 1; j <= attributeNum; ++j)
-    {
-        printf("attri: %s: has %d attrs\n", map[j].attributeName, map[j].attributeNum);
-        
-        for (i = 0; i < map[j].attributeNum; ++i)
-        {
-            printf("%s; ", map[j].attributes[i]);
-        }
-        printf("\n");
-    }
-
-    printf("\n");
-}
-
 void ConstructMap()
 {
     struct str_list {
@@ -345,31 +371,6 @@ int ConvertRawData2Map(int flag)
 	}
 
 	return 0;
-}
-
-void TestRawData(int flag)
-{
-    printf("testRawdata");
-    int num;
-    if (flag == 1)
-    {
-        num = numberOfTrainingRecord;
-    }
-    else
-    {
-        num = numberOfTestingRecord;
-    }
-    int i, j;
-    for (i = 1; i <= num; ++i)
-    {
-        for (j = 1; j <= attributeNum; ++j)
-        {
-            printf("%s      ",rawData[i][j] );
-        }
-        printf("\n");
-    }
-
-    printf("\n\n");
 }
 
 void OnReadData(char* filename, int flag/*training or testing*/)
@@ -527,7 +528,8 @@ int main(int argc, char* argv[])
     printf ("%lf\n", root->infoGain);*/
     Read(argc, argv);
     Init();
-//   root = GenerateDecisionTree();
+ 
+    root = GenerateDecisionTree();
     //TestRead();
     return 0;    
 }
