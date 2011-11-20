@@ -1,4 +1,8 @@
 Written by hanson(hangzhong.yu@gmail.com) at date 11/19/2011.
+
+compile command : gcc decisiontree.c -lm -o decisiontree
+then: ./decisiontree -r trainning.txt -t testing.txt -d 3 -c 2 -s 499 -m 200 -p 0
+
 Input Module:
 convert attribute to number,
 for instance:
@@ -24,4 +28,6 @@ for instance:
     3 0 2
 
 
+GenerageDecisionTree: have done
 
+then output is ongoing.

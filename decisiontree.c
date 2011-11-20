@@ -110,6 +110,12 @@ void TestRawData(int flag)
     printf("\n\n");
 }
 
+// Calculates log2 of number.  
+double YuLog2(double n)  
+{  
+    // log(n)/log(2) is log2.  
+    return log( n ) / log( 2 );  
+}
 
 int ConvertString2Number(char* str)
 {
@@ -610,7 +616,7 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
     {
         if (attributestate[i] != 0)
         {
-            infoGain0 += ((double)attributestate[i]/subpartitionnum)*((log2((double)attributestate[i]/subpartitionnum))*(-1));
+            infoGain0 += ((double)attributestate[i]/subpartitionnum)*((YuLog2((double)attributestate[i]/subpartitionnum))*(-1));
         }
     }
     double infoSum, partSum, logSum, spitSum;
@@ -657,11 +663,11 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
                 {
                     if (attributeclass[j][g] != 0)
                     {
-                        logSum += ((double)attributeclass[j][g]/partSum)*(log2((double)attributeclass[j][g]/partSum)*(-1));
+                        logSum += ((double)attributeclass[j][g]/partSum)*(YuLog2((double)attributeclass[j][g]/partSum)*(-1));
                     }
                 }
 
-                spitSum += ((double)partSum/subpartitionnum)*(log2((double)partSum/subpartitionnum)); 
+                spitSum += ((double)partSum/subpartitionnum)*(YuLog2((double)partSum/subpartitionnum)); 
                 infoSum += ((double)partSum/subpartitionnum)*logSum; 
             }
 
