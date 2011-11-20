@@ -206,7 +206,7 @@ void TestTestingData()
     {
         for (j = 1; j<= attributeNum; ++j)
         {
-            printf("%d   ", testingData[i][j]);
+            printf("%d   ", testData[i][j]);
         }
         printf("\n");
     }
@@ -214,8 +214,9 @@ void TestTestingData()
     printf("\n\n");
 }
 
-int ConvertRawData2Map(int flag)
+void ConstructMap()
 {
+    
     struct str_list {
         char str[MAXLEN];
         struct str_list *next;
@@ -224,13 +225,7 @@ int ConvertRawData2Map(int flag)
     list = tail = ptr = NULL;
     int totalnum;
     int i = 0, j = 0, k = 0, num = 0;
-    if (flag == 1){
-        totalnum = numberOfTrainingRecord;
-    }
-    else
-    {
-        totalnum = numberOfTestingRecord;
-    }
+    totalnum = numberOfTrainingRecord;
 	/* analyse input data(raw data) */
 	for (j = 1; j <= attributeNum; j++) {
 		for (i = 1; i <= totalnum; i++) {
@@ -300,7 +295,12 @@ int ConvertRawData2Map(int flag)
 
 		num = 0;
 	}
+}
 
+
+int ConvertRawData2Map(int flag)
+{
+    int i, j;
 	/* assign the training data and test data */
 	for (j = 1; j < attributeNum; j++) {
 		i = 0;
@@ -417,7 +417,10 @@ void OnReadData(char* filename, int flag/*training or testing*/)
             i++;
         }
     }
-
+    if (flag == 1)
+    {
+        ConstructMap();
+    }
 //    ConvertRawData2Map(flag);
     TestRawData(flag);
 }
@@ -472,7 +475,7 @@ int main(int argc, char* argv[])
     printf ("%lf\n", root->infoGain);*/
     Read(argc, argv);
     Init();
-    TestFunction();
+    //TestRead();
     return 0;    
 }
 
