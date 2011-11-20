@@ -514,15 +514,117 @@ void Init()
     ReadData();
 }
 
-TreeNode* GenerateDecisionTree(uint32_t level_no,uint32_t level_map[MAXLEVELNUM],
-        uint32_t level_class_map[MAXLEVELNUM],uint32_t slip_attr_value)
+uint32_t match_attribute(uint32_t levelNo,uint32_t *test, uint32_t* pathAttributeNameMap,uint32_t* pathAttributeValueMap)
 {
+    if(levelNo == 0)
+        return 1;
+        
+    uint32_t i = 0;
+    for(i=0;i<=level_no-1;i++)
+    {
+        if(test[level_map[i]]!=level_class_map[i])
+            return 0;
+    }
     
+    return 1;
+    
+}
+
+TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[MAXLEVELNUM],
+        uint32_t pathAttributeValueMap[MAXLEVELNUM], uint32_t slipAttrValue)
+{
+    int i, j;
+
+    uint32_t slipattribute[attributeNum + 1];
+    for (i = 1; i <= attributeNum; ++i)
+    {
+        slipattribute[i] = 0;
+    }
+    slipattribute[0] = 1;//classLab
+    
+    uint32_t attributestate[attributeNum+1];
+    for (i = 0;  i <= attributeNum; ++i)
+    {
+        attributestate[i] = 0;
+    }
+    
+    uint32_t attributeclassstate[attributeNum + 1][classNum+1];
+    for (i = 0; i <= attributeNum; ++i)
+    {
+        for (j = 0; j <= classNum; ++j)
+        {
+            attributeclassstate[i][j] = 0;
+        }
+    }
+
+    if (levelNo != 0)//not the root
+    {
+        for (i = 0; i < levelNo; ++i)
+        {
+            slipattribute[pathAttributeNameMap[i]] = 1;//remove those which has sliped attribute.
+        }
+    }
+
+
+    TreeNode* currentNode = (TreeNode*)malloc(sizeof(TreeNode));
+    memset(currentNode,0,sizeof(TreeNode));
+    
+    if(levelNo > 1){
+        for(i = 0;i<=levelNo-2;i++){
+            currentNode->pathAttributeName[i] = pathAttributeNameMap[i];
+            currentNode->pathAttributeValue[i] = pathAttributeValueMap[i];
+        }
+        currentNode->pathAttributeName[levelNo-1] = pathAttributeNameMap[levelNo-1];
+        currentNode->pathAttributeValue[levelNo-1] = slipAttrValue;
+    }
+    else if(levelNo == 1){
+        currentNode->pathAttributeName[levelNo-1] = pathAttributeNameMap[levelNo-1];
+        currentNode->pathAttributeValue[levelNo-1] = slipAttrValue;
+    }
+
+    uint32_t subPartitionNum = 0;
+    uint32_t * tempData = NULL;
+    for (j = 1; j <= numberOfTrainingRecord; ++j)
+    {
+        tempData = trainingData[j];
+
+        if (MatchAttribute(levelNo, tempData, currentNode->pathAttributeName, currentNode->pathAttributeValue) != 0)
+        {
+            attributestate[tempData[0]]++;//classLab
+            subPartitionNum++;
+        }
+    }
+    
+    uint32_t currentClass;
+    uint32_t testPure = 0;
+    for (i = 0; i < classNum; ++i)
+    {
+        if (attributestate[i] != 0)
+        {
+            testPure++;
+            currentClass = i;
+        }
+    }
+
+    if (levelNo == MAXLEVELNUM)
+    {
+
+        now_node->classify = find_max(class_num,attribute_stat);
+        now_node->isLeaf = 1;
+        now_node->selfLevel = levelNo;
+        now_node->childNode = NULL;
+        now_node->siblingNode = NULL;
+        insert_into_leaf_list(now_node);
+        return CurrentNode;
+    }
+
 }
 
 int main(int argc, char* argv[])
 {
     TreeNode* root = NULL;
+    uint32_t initPathAttributeName[MAXLEVELNUM]={0};
+    uint32_t initPathAttributeValue[MAXLEVELNUM]={0};
     /*for test
     root = (TreeNode*)malloc (sizeof(TreeNode));
     root->infoGain = 0.0;
@@ -530,7 +632,7 @@ int main(int argc, char* argv[])
     Read(argc, argv);
     Init();
  
-//    root = GenerateDecisionTree();
+    root = GenerateDecisionTree(0, initPathAttributeName, initPathAttributeValue, 0);
     //TestRead();
     return 0;    
 }

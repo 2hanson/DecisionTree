@@ -17,7 +17,7 @@ typedef struct
 typedef struct 
 {
     uint32_t leafClass;
-    uint32_t selLevel;
+    uint32_t selfLevel;
     uint32_t majorClass;
     uint32_t pathAttributeName[MAXLEVELNUM];
     uint32_t pathAttributeValue[MAXLEVELNUM];
