@@ -12,6 +12,7 @@ for instance:
     ID12104 0   23  0   Yellow
     first: read to rawdata;
     then: construct a Map as fellows
+        attributes0( is the Class Lab): 1, 0 (index from 0, so index is 0, 1)
         attributes1: 48, 40, 51, 23(index from 0, so this value index is 0, 1,2,3)
         attributes2:0, 1(index start from 0)
         attributes:Red, Black, Yellow(index start from 0)
