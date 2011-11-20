@@ -217,6 +217,24 @@ void TestTestingData()
     printf("\n\n");
 }
 
+void TestMap()
+{
+    int j, i;
+
+    for (j = 1; j <= attributeNum; ++j)
+    {
+        printf("attri: %s: has %d attrs\n", map[j].attributeName, map[j].attributeNum);
+        
+        for (i = 0; i < map[j].attributeNum; ++i)
+        {
+            printf("%s; ", map[j].attributes[i]);
+        }
+        printf("\n");
+    }
+
+    printf("\n");
+}
+
 void ConstructMap()
 {
     struct str_list {
@@ -297,6 +315,8 @@ void ConstructMap()
 
 		num = 0;
 	}
+
+    TestMap();
 }
 
 
@@ -438,7 +458,7 @@ void OnReadData(char* filename, int flag/*training or testing*/)
         ConstructMap();
     }
     //    ConvertRawData2Map(flag);
-    TestRawData(flag);
+    //TestRawData(flag);
 }
 
 void ReadData()
