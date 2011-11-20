@@ -183,6 +183,37 @@ int MapStr2Num(int i, char *str)
 	return -1;
 }
 
+void TestTrainData()
+{
+    printf("TestTrainingData");
+    int i, j;
+    for ( i = 1; i <= numberOfTrainingRecord; ++i)
+    {
+        for (j = 1; j <= attributeNum; ++j)
+        {
+            printf("%d   ", trainingData[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n\n");
+}
+
+void TestTestingData()
+{
+    printf("TestTestingData");
+    int i,j;
+    for (i = 1; i <= numberOfTestingRecord; ++i)
+    {
+        for (j = 1; j<= attributeNum; ++j)
+        {
+            printf("%d   ", testingData[i][j]);
+        }
+        printf("\n");
+    }
+
+    printf("\n\n");
+}
+
 int ConvertRawData2Map(int flag)
 {
     struct str_list {
@@ -289,6 +320,7 @@ int ConvertRawData2Map(int flag)
 
 void TestRawData(int flag)
 {
+    printf("testRawdata");
     int num;
     if (flag == 1)
     {
