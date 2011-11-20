@@ -514,20 +514,38 @@ void Init()
     ReadData();
 }
 
-uint32_t match_attribute(uint32_t levelNo,uint32_t *test, uint32_t* pathAttributeNameMap,uint32_t* pathAttributeValueMap)
+uint32_t MatchAttribute(uint32_t levelNo,uint32_t *test, uint32_t* pathAttributeNameMap,uint32_t* pathAttributeValueMap)
 {
     if(levelNo == 0)
         return 1;
         
     uint32_t i = 0;
-    for(i=0;i<=level_no-1;i++)
+    for(i=0;i<=levelNo-1;i++)
     {
-        if(test[level_map[i]]!=level_class_map[i])
+        if(test[pathAttributeNameMap[i]]!=pathAttributeValueMap[i])
             return 0;
     }
     
     return 1;
     
+}
+
+uint32_t FindMaxClassLab(int len, uint32_t arr[])
+{
+    uint32_t i = 0, max = 0;
+    for (i = 1; i < len; i++) {
+        if (arr[max] < arr[i])
+            max = i;
+    }
+    return max;
+}
+
+void InsertIntoLeafList(TreeNode* leafNode)
+{
+    curLeaf->nextLeaf = leafNode;
+    leafNode->preLeaf = curLeaf;
+    curLeaf = leafNode;
+    leafNode->nextLeaf = NULL;
 }
 
 TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[MAXLEVELNUM],
@@ -606,17 +624,36 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
         }
     }
 
-    if (levelNo == MAXLEVELNUM)
+    for (i = 1; i <= attributeNum; ++i)
     {
-
-        now_node->classify = find_max(class_num,attribute_stat);
-        now_node->isLeaf = 1;
-        now_node->selfLevel = levelNo;
-        now_node->childNode = NULL;
-        now_node->siblingNode = NULL;
-        insert_into_leaf_list(now_node);
-        return CurrentNode;
+        if (slipattribute[i] != 1)
+            break;
     }
+
+    //hit the max level or donot has any attribute not sliped yet
+    if (levelNo == MAXLEVELNUM || i > attributeNum)
+    {
+        currentNode->leafClass = FindMaxClassLab(classNum,attributestate);
+        currentNode->isLeaf = 1;
+        currentNode->selfLevel = levelNo;
+        currentNode->childNode = NULL;
+        currentNode->siblingNode = NULL;
+        InsertIntoLeafList(currentNode);
+        return currentNode;
+    }
+    
+    //just one classLab
+    if (testPure == 1)
+    {
+        currentNode->leafClass = currentClass; 
+        currentNode->isLeaf = 1;
+        currentNode->selfLevel = levelNo;
+        currentNode->childNode = NULL;
+        currentNode->siblingNode = NULL;
+        InsertIntoLeafList(currentNode);
+        return currentNode;
+    }
+
 
 }
 

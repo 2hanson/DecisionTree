@@ -14,7 +14,7 @@ typedef struct
     int attributeNum;
 }AttributeMap;
 
-typedef struct 
+typedef struct tree_node 
 {
     uint32_t leafClass;
     uint32_t selfLevel;
