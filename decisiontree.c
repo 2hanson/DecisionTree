@@ -20,7 +20,7 @@ char* trainingSetFile;
 char* testingSetFile;
 uint32_t ** confusionMatrix;
 
-void TestFunction()
+void TestRead()
 {
     printf("%s, %s,classnum = %d, attributenum = %d, train = %d, test = %d", trainingSetFile, testingSetFile, classNum, attributeNum, numberOfTrainingRecord, numberOfTestingRecord);
     if (isPrintResult == 1)
