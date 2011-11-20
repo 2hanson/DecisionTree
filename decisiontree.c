@@ -676,7 +676,6 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
     currentNode->selfLevel = levelNo;
     currentNode->pathAttributeName[levelNo] = slipAttributeNo;
     currentNode->infoGain = infogain;
-    //  printf("The info is %lf\n",now_node->info);
     currentNode->majorClass = majorClass;
     currentNode->childNode = NULL;
     currentNode->siblingNode = NULL;
