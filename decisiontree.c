@@ -3,7 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-AttributeMap* map;
+AttributeMap* map; 
+//attribute is range from 1 to attributenum. colcume 0 is the classLab
 char ***rawData = NULL;
 uint32_t **trainingData = NULL;
 uint32_t **testData = NULL;
@@ -39,7 +40,7 @@ void TestTrainData()
     int i, j;
     for ( i = 1; i <= numberOfTrainingRecord; ++i)
     {
-        for (j = 1; j <= attributeNum; ++j)
+        for (j = 0; j <= attributeNum; ++j)
         {
             printf("%d   ", trainingData[i][j]);
         }
@@ -54,7 +55,7 @@ void TestTestingData()
     int i,j;
     for (i = 1; i <= numberOfTestingRecord; ++i)
     {
-        for (j = 1; j<= attributeNum; ++j)
+        for (j = 0; j<= attributeNum; ++j)
         {
             printf("%d   ", testData[i][j]);
         }
@@ -68,7 +69,7 @@ void TestMap()
 {
     int j, i;
 
-    for (j = 1; j <= attributeNum; ++j)
+    for (j = 0; j <= attributeNum; ++j)
     {
         printf("attri: %s: has %d attrs\n", map[j].attributeName, map[j].attributeNum);
         
@@ -97,7 +98,7 @@ void TestRawData(int flag)
     int i, j;
     for (i = 1; i <= num; ++i)
     {
-        for (j = 1; j <= attributeNum; ++j)
+        for (j = 0; j <= attributeNum; ++j)
         {
             printf("%s      ",rawData[i][j] );
         }
@@ -274,7 +275,7 @@ void ConstructMap()
     int i = 0, j = 0, k = 0, num = 0;
     totalnum = numberOfTrainingRecord;
 	/* analyse input data(raw data) */
-	for (j = 1; j <= attributeNum; j++) {
+	for (j = 0; j <= attributeNum; j++) {//0 is the classLab
 		for (i = 1; i <= totalnum; i++) {
 			ptr = list;
 			while (ptr) {
@@ -351,7 +352,7 @@ int ConvertRawData2Map(int flag)
 {
     int i, j;
 	/* assign the training data and test data */
-	for (j = 1; j <= attributeNum; j++) {
+	for (j = 0; j <= attributeNum; j++) {
 		i = 1;
 		if (flag == 1) {
             while (i <= numberOfTrainingRecord)
@@ -407,7 +408,7 @@ void OnReadData(char* filename, int flag/*training or testing*/)
         }
         begin = buffer;
         end = NULL;
-        for (j =0; j < 2; ++j)
+        for (j =0; j < 1; ++j)
         {
             end = strchr(begin, (int)('\t'));
             if (end)
@@ -424,9 +425,9 @@ void OnReadData(char* filename, int flag/*training or testing*/)
                 exit(-1);
             }
         }
-        //attribute is range from 1 to attributenum.
+        //attribute is range from 1 to attributenum. colcume 0 is the classLab
         
-        for (j = 1; j <= attributeNum-1; j++) {
+        for (j = 0; j <= attributeNum-1; j++) {
             end = strchr(begin, (int)('\t'));
             if (!end)
             {
@@ -529,7 +530,7 @@ int main(int argc, char* argv[])
     Read(argc, argv);
     Init();
  
-    root = GenerateDecisionTree();
+//    root = GenerateDecisionTree();
     //TestRead();
     return 0;    
 }
