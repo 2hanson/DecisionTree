@@ -443,9 +443,9 @@ void ConstructMap()
                 {
                     map[j].attributeValue[a] = ConvertString2Number(map[j].attributes[a]);
                 }
-                TestMap();
+                //TestMap();
                 qsort(map[j].attributeValue, map[j].attributeNum, sizeof(map[j].attributeValue[0]),cmp);
-                TestMap();
+                //TestMap();
             }
         }
 
