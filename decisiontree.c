@@ -27,16 +27,17 @@ void VisitTree(TreeNode*);
 
 void TestLeafList()
 {
+    printf("test leaf list: \n");
     TreeNode* tempList = leafList;
     while (tempList!=NULL)
     {    
         int i;
-        printf("%d\n", tempList->selfLevel);
+        printf("level: %d\n", tempList->selfLevel);
         for (i = 0; i <= tempList->selfLevel; ++i)
         {
             printf("%d; ", tempList->pathAttributeName[i]);
         }
-
+        printf("\n");
         tempList = tempList->nextLeaf;
     }
 }
@@ -1141,6 +1142,7 @@ int main(int argc, char* argv[])
     Init();
     root = GenerateDecisionTree(0, initPathAttributeName, initPathAttributeValue, 0);
    TestVisitTree(root); 
-    return 0; 
+   TestLeafList(); 
+   return 0; 
 }
 
