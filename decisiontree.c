@@ -643,6 +643,10 @@ void Init()
     ReadData();
 }
 
+void TestPath()
+{
+}
+
 uint32_t MatchAttribute(const uint32_t levelNo,uint32_t *test, uint32_t* pathAttributeNameMap,uint32_t* pathAttributeValueMap, uint32_t* pathFlag)
 {
     if(levelNo == 0)
@@ -934,9 +938,9 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
         currentNode->pathFlag[levelNo - 1] = flag;
     }
     else if(levelNo == 1){
-        currentNode->pathAttributeName[levelNo-1] = pathAttributeNameMap[levelNo-1];
-        currentNode->pathAttributeValue[levelNo-1] = slipAttrValue;
-        currentNode->pathFlag[levelNo-1] = flag;
+        currentNode->pathAttributeName[levelNo - 1] = pathAttributeNameMap[levelNo-1];
+        currentNode->pathAttributeValue[levelNo - 1] = slipAttrValue;
+        currentNode->pathFlag[levelNo - 1] = flag;
     }
 
     uint32_t subPartitionNum = 0; // the count of records fellow this path.
@@ -962,7 +966,13 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
             currentClass = i;
         }
     }
-
+    if (testPure == 0) {
+        
+        for(i = 0;i<=levelNo-1;i++){
+           printf("%d %d %d\n", currentNode->pathAttributeName[i], currentNode->pathAttributeValue[i] = pathAttributeValueMap[i], currentNode->pathFlag[i] = pathFlag[i]);
+        }
+        printf("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n");
+    }
     for (i = 1; i <= attributeNum; ++i)
     {
         if (slipattribute[i] != 1)
@@ -1234,8 +1244,8 @@ int main(int argc, char* argv[])
     Read(argc, argv);
     Init();
     root = GenerateDecisionTree(0, initPathAttributeName, initPathAttributeValue, initPathFlag, 0, 0);
-    TestMap();
-    TestVisitTree(root); 
+  //  TestMap();
+//    TestVisitTree(root); 
   //  TestLeafList(); 
 //    TestInnerNodeList();
     return 0; 
