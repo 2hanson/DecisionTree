@@ -110,6 +110,11 @@ void TestRawData(int flag)
     printf("\n\n");
 }
 
+int cmp ( const void *a , const void *b )
+{
+    return strcmp( (*(char * const *)a) , (*(char * const *)b) );
+}
+
 // Calculates log2 of number.  
 double YuLog2(double n)  
 {  
@@ -322,6 +327,7 @@ void ConstructMap()
 
 		/* assign the list to attribute_map */
 		map[j].attributeNum = num;
+        map[j].isConsecutive = 0;
 		map[j].attributes = (char **)malloc(sizeof(char *) * num);
 		if (!map[j].attributes) {
 			fprintf(stderr, "malloc memory failed, abort.\n");
@@ -576,17 +582,17 @@ uint32_t FindMaxValue(uint32_t len, double arr[])
 }
 
 uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap, uint32_t* pathAttributeValueMap,
-        uint32_t subpartitionnum,uint32_t slipAttribute[attributeNum],double* infogainradio,uint32_t* majorclass)
+        uint32_t subpartitionnum,uint32_t slipAttribute[attributeNum + 1],double* infogainradio,uint32_t* majorclass)
 {
     uint32_t attributestate[classNum];
-    uint32_t attributeclass[attributeNum][classNum];
+    uint32_t attributeclass[12][classNum];
 
     int i, j;
     for (i = 0; i < classNum; ++i)
     {
         attributestate[i] = 0;
     }
-    double infogain[attributeNum];
+    double infogain[attributeNum + 1];
     for (i = 1; i <= attributeNum; ++i)
     {
         infogain[i] = 0;
@@ -594,7 +600,7 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
 
     infogain[0] = -100;
     
-    for (i = 1; i <= attributeNum; ++i )
+    for (i = 1; i < 12; ++i )
     {
         for (j = 0;  j < classNum; ++j)
         {
@@ -620,19 +626,19 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
         }
     }
     double infoSum, partSum, logSum, spitSum;
-    int k, g;
+    int k, g, h;
     for (i = 1; i <= attributeNum; ++i)
     {
         infoSum = 0;
-        
+
         if (slipAttribute[i] == 1)
         {
             infogain[i] = -100;
             continue;
         }
-        else if (map[i].attributeNum <= 10) //disperse
+        else if (map[i].attributeNum <= 10) //discrete
         {
-            for (k = 1; k <= attributeNum; ++k)
+            for (k = 0; k <= 12; ++k)
             {
                 for (j = 0; j < classNum; ++j)
                 {
@@ -675,14 +681,30 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
             infogain[i] = (infoGain0 - infoSum) / spitSum;
         }
         else {//consecutive
-            
-        }       
+            printf("For Test 1:\n");
+            TestMap();
+            map[i].isConsecutive = 1;
+            //TestMap();
+//            qsort(map[i].attributes, map[i].attributeNum, MAXLEN-1,cmp);
+            printf("for test 2:\n");
+            TestMap();
+            for (j = 1; j < map[i].attributeNum-1; ++j) {
+                ////////////////////////////////////////////////////////////////////////
+                for (k = 1; k <= numberOfTrainingRecord; ++k)
+                {
+                    tempdata = trainingData[k];
+                    if (MatchAttribute(levelNo, tempdata, pathAttributeNameMap, pathAttributeValueMap) != 0){
+                            
+                    }
+                }
+
+            }
+        }
     }
 
     uint32_t returnattributeno = FindMaxValue(attributeNum, infogain);
     *majorclass = FindMaxClassLab(classNum, attributestate);
     *infogainradio = infogain[returnattributeno];
-
     return returnattributeno;
 }
 
@@ -797,8 +819,7 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
     double infogain = 0;
     slipAttributeNo = SelectAttributeByRule(levelNo, currentNode->pathAttributeName, currentNode->pathAttributeValue,
             subPartitionNum, slipattribute, &infogain, &majorClass);//this function have to change the value of majorclass and infogain
-
-    slipAttributeNo = 0;////////////////////////////////////////////////////////bug
+    slipAttributeNo = 0; //////////////////this is bug////////////////////////////////////////////////////////////////////////////////////////
     currentNode->classify = 0;
     currentNode->isLeaf = 0;
     currentNode->selfLevel = levelNo;
