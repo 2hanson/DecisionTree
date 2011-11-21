@@ -44,12 +44,14 @@ void TestLeafList()
 
 void  TestInnerNodeList()
 {
+    printf("test inner node list\n");
     TreeNode *tempList;
-    int i;
-    for (i = 0; i <= totalLevel; ++i){
-        tempList = innerNodeList[i];
+    int i, k;
+    for (k = 0; k <= totalLevel; ++k){
+        tempList = innerNodeList[k];
+            
+        printf("level: %d and index %d\n", tempList->selfLevel, k);
         while (tempList != NULL) {
-            printf("%d\n", tempList->selfLevel);
             for (i = 0; i <= tempList->selfLevel; ++i)
             {
                 printf("%d; ", tempList->pathAttributeName[i]);
@@ -57,6 +59,8 @@ void  TestInnerNodeList()
         
             tempList = tempList->nextInnerNode;
         }
+
+        printf("\n\n");
     }
 }
 
@@ -1141,8 +1145,9 @@ int main(int argc, char* argv[])
     Read(argc, argv);
     Init();
     root = GenerateDecisionTree(0, initPathAttributeName, initPathAttributeValue, 0);
-   TestVisitTree(root); 
-   TestLeafList(); 
-   return 0; 
+    TestVisitTree(root); 
+    TestLeafList(); 
+    TestInnerNodeList();
+    return 0; 
 }
 
