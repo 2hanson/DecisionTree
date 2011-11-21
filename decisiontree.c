@@ -643,7 +643,7 @@ void Init()
     ReadData();
 }
 
-uint32_t MatchAttribute(const uint32_t levelNo,uint32_t *test, uint32_t* pathAttributeNameMap,uint32_t* pathAttributeValueMap)
+uint32_t MatchAttribute(const uint32_t levelNo,uint32_t *test, uint32_t* pathAttributeNameMap,uint32_t* pathAttributeValueMap, uint32_t* pathFlag)
 {
     if(levelNo == 0)
         return 1;
@@ -651,8 +651,28 @@ uint32_t MatchAttribute(const uint32_t levelNo,uint32_t *test, uint32_t* pathAtt
     uint32_t i = 0;
     for(i = 0; i <= levelNo - 1; i++)
     {
-        if(test[pathAttributeNameMap[i]]!=pathAttributeValueMap[i])
-            return 0;
+        if (map[i].isConsecutive == 0)
+        {
+            if(test[pathAttributeNameMap[i]]!=pathAttributeValueMap[i])
+                return 0;
+        }
+        else {
+            if (pathFlag[i] == 0)//<=
+            {
+                if(test[pathAttributeNameMap[i]] > pathAttributeValueMap[i])
+                {
+                    return 0;
+                }
+            }
+            else if (pathFlag[i] == 1)
+            {
+                
+                if(test[pathAttributeNameMap[i]] <= pathAttributeValueMap[i])
+                {
+                    return 0;
+                }
+            }
+        }
     }
     
     return 1;
@@ -696,8 +716,8 @@ uint32_t FindMaxValue(uint32_t len, double arr[])
     return max;
 }
 
-uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap, uint32_t* pathAttributeValueMap,
-        uint32_t subpartitionnum,uint32_t slipAttribute[attributeNum + 1],double* infogainradio,uint32_t* majorclass)
+uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap, uint32_t* pathAttributeValueMap, uint32_t* pathFlag,
+        uint32_t subpartitionnum,uint32_t slipAttribute[attributeNum + 1],double* infogainradio,uint32_t* majorclass, int* _splitvalue)
 {
     uint32_t attributestate[classNum];
     uint32_t attributeclass[differValue][classNum];
@@ -728,7 +748,7 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
     for(i = 1; i<=numberOfTrainingRecord; i++)
     {
         tempdata = trainingData[i];    
-        if(MatchAttribute(levelNo,tempdata,pathAttributeNameMap,pathAttributeValueMap)!=0)
+        if(MatchAttribute(levelNo,tempdata,pathAttributeNameMap,pathAttributeValueMap, pathFlag)!=0)
             attributestate[tempdata[0]]++;
     }
 
@@ -765,7 +785,7 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
             {
                 tempdata = trainingData[k];
         
-                if(MatchAttribute(levelNo,tempdata,pathAttributeNameMap,pathAttributeValueMap)!=0) {
+                if(MatchAttribute(levelNo,tempdata,pathAttributeNameMap,pathAttributeValueMap, pathFlag)!=0) {
                     attributeclass[tempdata[i]][tempdata[0]]++;
                 }
             }
@@ -809,7 +829,7 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
                 for (k = 1; k <= numberOfTrainingRecord; ++k)
                 {
                     tempdata = trainingData[k];
-                    if (MatchAttribute(levelNo, tempdata, pathAttributeNameMap, pathAttributeValueMap) != 0){
+                    if (MatchAttribute(levelNo, tempdata, pathAttributeNameMap, pathAttributeValueMap, pathFlag) != 0){
                            if (tempdata[i] <= map[i].attributeValue[j]) {
                                 attributeclass[0][tempdata[0]]++; //<=
                            }
@@ -844,14 +864,14 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
 
                 if (j == 1) {
                     infogain[i] = (infoGain0 - infoSum) / spitSum;
-                    map[i].splitValue = map[i].attributeValue[j];
+                    *_splitvalue = map[i].attributeValue[j];
                 }
                 else {
                     double tempgain = (infoGain0 - infoSum) / spitSum;
                     if (tempgain > infogain[i])
                     {
                         infogain[i] = tempgain;
-                        map[i].splitValue = map[i].attributeValue[j];
+                       *_splitvalue = map[i].attributeValue[j];
                     }
                 }
             }
@@ -864,8 +884,8 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
     return returnattributeno;
 }
 
-TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[MAXLEVELNUM],
-        uint32_t pathAttributeValueMap[MAXLEVELNUM], uint32_t slipAttrValue)
+TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[MAXLEVELNUM+1],
+        uint32_t pathAttributeValueMap[MAXLEVELNUM+1], uint32_t pathFlag[MAXLEVELNUM+1], uint32_t slipAttrValue, uint32_t flag)
 {
     int i, j;
 
@@ -907,13 +927,16 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
         for(i = 0;i<=levelNo-2;i++){
             currentNode->pathAttributeName[i] = pathAttributeNameMap[i];
             currentNode->pathAttributeValue[i] = pathAttributeValueMap[i];
+            currentNode->pathFlag[i] = pathFlag[i];
         }
         currentNode->pathAttributeName[levelNo-1] = pathAttributeNameMap[levelNo-1];
         currentNode->pathAttributeValue[levelNo-1] = slipAttrValue;
+        currentNode->pathFlag[levelNo - 1] = flag;
     }
     else if(levelNo == 1){
         currentNode->pathAttributeName[levelNo-1] = pathAttributeNameMap[levelNo-1];
         currentNode->pathAttributeValue[levelNo-1] = slipAttrValue;
+        currentNode->pathFlag[levelNo-1] = flag;
     }
 
     uint32_t subPartitionNum = 0; // the count of records fellow this path.
@@ -922,7 +945,7 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
     {
         tempData = trainingData[j];
 
-        if (MatchAttribute(levelNo, tempData, currentNode->pathAttributeName, currentNode->pathAttributeValue) != 0)
+        if (MatchAttribute(levelNo, tempData, currentNode->pathAttributeName, currentNode->pathAttributeValue, currentNode->pathFlag) != 0)
         {
             attributestate[tempData[0]]++;//classLab
             subPartitionNum++;
@@ -972,8 +995,12 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
     uint32_t majorClass = 0;
     uint32_t slipAttributeNo = 0;
     double infogain = 0;
-    slipAttributeNo = SelectAttributeByRule(levelNo, currentNode->pathAttributeName, currentNode->pathAttributeValue,
-            subPartitionNum, slipattribute, &infogain, &majorClass);//this function have to change the value of majorclass and infogain
+    
+    int slipvalueforconsecutive;
+
+    ////////////////////////////////////////bug
+    slipAttributeNo = SelectAttributeByRule(levelNo, currentNode->pathAttributeName, currentNode->pathAttributeValue, currentNode->pathFlag,
+            subPartitionNum, slipattribute, &infogain, &majorClass, &slipvalueforconsecutive);//this function have to change the value of majorclass and infogain
     if (slipAttributeNo == 0)
         return NULL;
     currentNode->classify = 0;
@@ -992,9 +1019,9 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
         for(i = 1; i <= numberOfTrainingRecord; i++)
         {
             tempData = trainingData[i];
-            if(MatchAttribute(levelNo,tempData,currentNode->pathAttributeName,currentNode->pathAttributeValue)!=0)
+            if(MatchAttribute(levelNo,tempData,currentNode->pathAttributeName,currentNode->pathAttributeValue, currentNode->pathFlag)!=0)
             {
-                if (tempData[i] <= map[slipAttributeNo].splitValue) {
+                if (tempData[slipAttributeNo] <= slipvalueforconsecutive) {
                 	attributeclassstate[0][tempData[0]]++; //<=
                 }
                 else {
@@ -1025,12 +1052,14 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
                 for(k = 0;k <= levelNo-1;k++){
                     newNode->pathAttributeName[k] = currentNode->pathAttributeName[k];
                     newNode->pathAttributeValue[k] = currentNode->pathAttributeValue[k];
+                    newNode->pathFlag[k] = currentNode->pathFlag[k];
                 }
                 newNode->pathAttributeName[levelNo] = currentNode->pathAttributeName[levelNo];
             
             }
        
-            newNode->pathAttributeValue[levelNo]=0;
+            newNode->pathAttributeValue[levelNo] = slipvalueforconsecutive;
+            newNode->pathFlag[levelNo] = 0;
             newNode->isLeaf = 1;
             newNode->selfLevel = levelNo+1;
             newNode->childNode = NULL;
@@ -1039,7 +1068,7 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
             InsertIntoLeafList(newNode);
         }
         else{
-            newNode = GenerateDecisionTree(levelNo+1,currentNode->pathAttributeName,currentNode->pathAttributeValue,0);
+            newNode = GenerateDecisionTree(levelNo+1,currentNode->pathAttributeName,currentNode->pathAttributeValue, currentNode->pathFlag, slipvalueforconsecutive, 0);
         
         }
         currentNode->childNode = newNode;
@@ -1062,10 +1091,12 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
                     for(k = 0;k <= levelNo-1;k++){
                         newNode->pathAttributeName[k] = currentNode->pathAttributeName[k];
                         newNode->pathAttributeValue[k] = currentNode->pathAttributeValue[k];
+                        newNode->pathFlag[k] = currentNode->pathFlag[k];
                     }
                     newNode->pathAttributeName[levelNo] = currentNode->pathAttributeName[levelNo];
                 }
-                newNode->pathAttributeValue[levelNo]=i;
+                newNode->pathAttributeValue[levelNo]=slipvalueforconsecutive;
+                newNode->pathFlag[levelNo] = 1;//>
                 newNode->isLeaf = 1;
                 newNode->selfLevel = levelNo+1;
                 newNode->childNode = NULL;
@@ -1074,7 +1105,7 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
                 InsertIntoLeafList(newNode);
             }
             else{
-                newNode = GenerateDecisionTree(levelNo+1,currentNode->pathAttributeName,currentNode->pathAttributeValue,i);
+                newNode = GenerateDecisionTree(levelNo+1,currentNode->pathAttributeName,currentNode->pathAttributeValue,currentNode->pathFlag, slipvalueforconsecutive, 1);
             }
             tempNode->siblingNode = newNode;
             tempNode = newNode;
@@ -1085,7 +1116,7 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
         for(i = 1; i <= numberOfTrainingRecord; i++)
         {
             tempData = trainingData[i];
-            if(MatchAttribute(levelNo,tempData,currentNode->pathAttributeName,currentNode->pathAttributeValue)!=0)
+            if(MatchAttribute(levelNo,tempData,currentNode->pathAttributeName,currentNode->pathAttributeValue, currentNode->pathFlag)!=0)
             {
                 attributeclassstate[tempData[slipAttributeNo]][tempData[0]]++;
             }
@@ -1128,7 +1159,7 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
             InsertIntoLeafList(newNode);
         }
         else{
-            newNode = GenerateDecisionTree(levelNo+1,currentNode->pathAttributeName,currentNode->pathAttributeValue,0);
+            newNode = GenerateDecisionTree(levelNo+1,currentNode->pathAttributeName,currentNode->pathAttributeValue,currentNode->pathFlag, 0, 0);
         
         }
         currentNode->childNode = newNode;
@@ -1163,7 +1194,7 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
                 InsertIntoLeafList(newNode);
             }
             else{
-                newNode = GenerateDecisionTree(levelNo+1,currentNode->pathAttributeName,currentNode->pathAttributeValue,i);
+                newNode = GenerateDecisionTree(levelNo+1,currentNode->pathAttributeName,currentNode->pathAttributeValue,currentNode->pathFlag, i, 1);
             }
 
             tempNode->siblingNode = newNode;
@@ -1199,9 +1230,10 @@ int main(int argc, char* argv[])
     TreeNode* root = NULL;
     uint32_t initPathAttributeName[MAXLEVELNUM + 1]={0};
     uint32_t initPathAttributeValue[MAXLEVELNUM + 1]={0};
+    uint32_t initPathFlag[MAXLEVELNUM + 1] = {0};
     Read(argc, argv);
     Init();
-    root = GenerateDecisionTree(0, initPathAttributeName, initPathAttributeValue, 0);
+    root = GenerateDecisionTree(0, initPathAttributeName, initPathAttributeValue, initPathFlag, 0, 0);
     TestMap();
     TestVisitTree(root); 
   //  TestLeafList(); 

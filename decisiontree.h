@@ -24,6 +24,7 @@ typedef struct tree_node
     uint32_t majorClass;
     uint32_t pathAttributeName[MAXLEVELNUM];
     uint32_t pathAttributeValue[MAXLEVELNUM];
+    uint32_t pathFlag[MAXLEVELNUM];
     struct tree_node* childNode;
     struct tree_node* siblingNode;
     struct tree_node* nextInnerNode;

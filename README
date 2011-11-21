@@ -31,3 +31,8 @@ for instance:
 GenerageDecisionTree: have done
 
 then output is ongoing.
+
+the bug:
+
+1. line1016 i -> slipAttributeNo
+2. matchattribute() when enconter a consecutive attribute cannot work right.
