@@ -22,6 +22,7 @@ char* trainingSetFile;
 char* testingSetFile;
 uint32_t ** confusionMatrix;
 uint32_t totalLevel;
+uint32_t differValue = 60;
 
 void TestRead()
 {
@@ -133,6 +134,19 @@ int ConvertString2Number(char* str)
    }
 
    return retNum;
+}
+
+int IsNumber(char* str)
+{
+   int ret = 1;
+    
+   int i = 0;
+   for (i = 0; str[i] != '\0'; ++i)
+   {
+        if (str[i] < '0' || str[i] > '9')
+            return 0;
+   }
+   return ret;
 }
 
 void Read(int argc, char* argv[])
@@ -585,7 +599,7 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
         uint32_t subpartitionnum,uint32_t slipAttribute[attributeNum + 1],double* infogainradio,uint32_t* majorclass)
 {
     uint32_t attributestate[classNum];
-    uint32_t attributeclass[12][classNum];
+    uint32_t attributeclass[differValue][classNum];
 
     int i, j;
     for (i = 0; i < classNum; ++i)
@@ -600,7 +614,7 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
 
     infogain[0] = -100;
     
-    for (i = 1; i < 12; ++i )
+    for (i = 1; i < differValue; ++i )
     {
         for (j = 0;  j < classNum; ++j)
         {
@@ -636,9 +650,9 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
             infogain[i] = -100;
             continue;
         }
-        else if (map[i].attributeNum <= 10) //discrete
+        else if (map[i].attributeNum <= 10 && IsNumber(map[i].attributes[0]) == 0) //discrete
         {
-            for (k = 0; k <= 12; ++k)
+            for (k = 0; k <= differValue; ++k)
             {
                 for (j = 0; j < classNum; ++j)
                 {
@@ -764,14 +778,14 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
     }
     slipattribute[0] = 1;//classLab
     
-    uint32_t attributestate[12];
-    for (i = 0;  i <= 11; ++i)
+    uint32_t attributestate[differValue];
+    for (i = 0;  i <= differValue-1; ++i)
     {
         attributestate[i] = 0;
     }
     
-    uint32_t attributeclassstate[12][classNum+1];
-    for (i = 0; i < 12; ++i)
+    uint32_t attributeclassstate[differValue][classNum+1];
+    for (i = 0; i < differValue; ++i)
     {
         for (j = 0; j <= classNum; ++j)
         {
@@ -873,7 +887,7 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
     InsertIntoInnerList(levelNo,currentNode);
     TreeNode* tempNode = currentNode;
     slipattribute[slipAttributeNo] = 1; 
-    if (map[slipAttributeNo].attributeNum >= 10)//consecutive
+    if (map[slipAttributeNo].isConsecutive == 1)//consecutive
     {
         for(i = 1; i <= numberOfTrainingRecord; i++)
         {
