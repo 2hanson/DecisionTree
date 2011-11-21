@@ -624,14 +624,7 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
     for (i = 1; i <= attributeNum; ++i)
     {
         infoSum = 0;
-        for (k = 1; k <= attributeNum; ++k)
-        {
-            for (j = 0; j < classNum; ++j)
-            {
-                attributeclass[k][j] = 0;
-            }
-        }
-
+        
         if (slipAttribute[i] == 1)
         {
             infogain[i] = -100;
@@ -639,6 +632,14 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
         }
         else if (map[i].attributeNum <= 10) //disperse
         {
+            for (k = 1; k <= attributeNum; ++k)
+            {
+                for (j = 0; j < classNum; ++j)
+                {
+                    attributeclass[k][j] = 0;
+                }
+            }
+
             for (k = 1; k <= numberOfTrainingRecord; ++k)
             {
                 tempdata = trainingData[k];
@@ -681,6 +682,8 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
     uint32_t returnattributeno = FindMaxValue(attributeNum, infogain);
     *majorclass = FindMaxClassLab(classNum, attributestate);
     *infogainradio = infogain[returnattributeno];
+
+    return returnattributeno;
 }
 
 TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[MAXLEVELNUM],
@@ -795,6 +798,7 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
     slipAttributeNo = SelectAttributeByRule(levelNo, currentNode->pathAttributeName, currentNode->pathAttributeValue,
             subPartitionNum, slipattribute, &infogain, &majorClass);//this function have to change the value of majorclass and infogain
 
+    slipAttributeNo = 0;////////////////////////////////////////////////////////bug
     currentNode->classify = 0;
     currentNode->isLeaf = 0;
     currentNode->selfLevel = levelNo;
