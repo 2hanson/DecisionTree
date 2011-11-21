@@ -153,6 +153,7 @@ void TestRawData(int flag)
 
 void TestVisitTree(TreeNode* root)
 {
+    printf("test tree\n");
     VisitTree(root);
 }
 
@@ -1120,7 +1121,7 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
 void VisitTree(TreeNode* currentNode)
 {
     int i;
-    printf("%d\n", currentNode->selfLevel);
+    printf("level %d\n", currentNode->selfLevel);
     for (i = 0; i <= currentNode->selfLevel; ++i)
     {
         printf("%d; ", currentNode->pathAttributeName[i]);
@@ -1146,8 +1147,8 @@ int main(int argc, char* argv[])
     Init();
     root = GenerateDecisionTree(0, initPathAttributeName, initPathAttributeValue, 0);
     TestVisitTree(root); 
-    TestLeafList(); 
-    TestInnerNodeList();
+  //  TestLeafList(); 
+//    TestInnerNodeList();
     return 0; 
 }
 
