@@ -25,6 +25,40 @@ uint32_t totalLevel;
 uint32_t differValue = 60;
 void VisitTree(TreeNode*);
 
+void TestLeafList()
+{
+    TreeNode* tempList = leafList;
+    while (tempList!=NULL)
+    {    
+        int i;
+        printf("%d\n", tempList->selfLevel);
+        for (i = 0; i <= tempList->selfLevel; ++i)
+        {
+            printf("%d; ", tempList->pathAttributeName[i]);
+        }
+
+        tempList = tempList->nextLeaf;
+    }
+}
+
+void  TestInnerNodeList()
+{
+    TreeNode *tempList;
+    int i;
+    for (i = 0; i <= totalLevel; ++i){
+        tempList = innerNodeList[i];
+        while (tempList != NULL) {
+            printf("%d\n", tempList->selfLevel);
+            for (i = 0; i <= tempList->selfLevel; ++i)
+            {
+                printf("%d; ", tempList->pathAttributeName[i]);
+            }
+        
+            tempList = tempList->nextInnerNode;
+        }
+    }
+}
+
 void TestRead()
 {
     printf("%s, %s,classnum = %d, attributenum = %d, train = %d, test = %d", trainingSetFile, testingSetFile, classNum, attributeNum, numberOfTrainingRecord, numberOfTestingRecord);
