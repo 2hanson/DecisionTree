@@ -680,7 +680,7 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
 
             infogain[i] = (infoGain0 - infoSum) / spitSum;
         }
-        else {//consecutive
+        else {//consecutive, split to two subset(<= , and >)
             printf("For Test 1:\n");
             TestMap();
             map[i].isConsecutive = 1;
@@ -690,14 +690,62 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
             TestMap();
             for (j = 1; j < map[i].attributeNum-1; ++j) {
                 ////////////////////////////////////////////////////////////////////////
+                for (k = 0; k < 2; ++k)
+                {
+                    for (h = 0; h < classNum; ++h)
+                    {
+                        attributeclass[k][h] = 0;
+                    }
+                }
+
                 for (k = 1; k <= numberOfTrainingRecord; ++k)
                 {
                     tempdata = trainingData[k];
                     if (MatchAttribute(levelNo, tempdata, pathAttributeNameMap, pathAttributeValueMap) != 0){
-                            
+                           if (tempdata[i] <= map[i].attributes[j]) {
+                                attributeclass[0][tempdata[0]]++; //<=
+                           }
+                           else {
+                                attributeclass[1][tempdata[0]] ++;//>
+                           }
                     }
                 }
 
+                splitsum = 0;
+                for (k = 0; k < 2; ++k) {
+                    partsum = 0;
+    
+                    for (h = 0; h < classNum; ++h) {
+                        partsum += attributeclass[k][h];
+                    }
+
+                    logsum = 0;
+                
+                    for (h = 0; h < classNum; ++h)
+                    {
+                        if (attributeclass[k][h] != 0)
+                        {
+                            logSum += ((double)attributeclass[k][h]/partSum)*(YuLog2((double)attributeclass[k][h]/partSum)*(-1));
+                        }
+                    }
+                
+                    spitSum += ((double)partSum/subpartitionnum)*(YuLog2((double)partSum/subpartitionnum)); 
+                    infoSum += ((double)partSum/subpartitionnum)*logSum; 
+            
+                }
+
+                if (j == 1) {
+                    infogain[i] = (infoGain0 - infoSum) / spitSum;
+                    map[i].splitValue = j;
+                }
+                else {
+                    double tempgain = (infoGain0 - infoSum) / splitSum;
+                    if (tempgain > infogain[i])
+                    {
+                        infogain[i] = tempgain;
+                        map[i].splitValue = j;
+                    }
+                }
             }
         }
     }
