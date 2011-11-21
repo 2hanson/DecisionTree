@@ -410,10 +410,10 @@ void ConstructMap()
         
         if (j > 0)
         {
-            if (map[i].attributeNum > 10 && IsNumber(map[i].attributes[0]) == 1) //Consecutive
+            if (map[j].attributeNum > 20 && IsNumber(map[j].attributes[0]) == 1) //Consecutive
             {
-                map[i].isConsecutive = 1;
-                qsort(map[i].attributes, map[i].attributeNum, sizeof(map[i].attributes[0]),cmp);
+                map[j].isConsecutive = 1;
+                qsort(map[j].attributes, map[j].attributeNum, sizeof(map[j].attributes[0]),cmp);
             }
         }
 
@@ -1132,7 +1132,7 @@ void VisitTree(TreeNode* currentNode)
     printf("level %d\n", currentNode->selfLevel);
     for (i = 0; i <= currentNode->selfLevel; ++i)
     {
-        printf("%d; ", currentNode->pathAttributeName[i]);
+        printf("nameIndex: %d; value: %d;;;;", currentNode->pathAttributeName[i], currentNode->pathAttributeValue[i]);
     }
     printf("\n");
     if (currentNode->childNode != NULL)
