@@ -184,7 +184,7 @@ void Read(int argc, char* argv[])
         }
     }
 
-    TestRead();
+    //TestRead();
 }
 
 void MallocMemory()
@@ -358,7 +358,7 @@ void ConstructMap()
 		num = 0;
 	}
 
-    TestMap();
+    //TestMap();
 }
 
 
@@ -490,8 +490,8 @@ void ReadData()
 
     OnReadData(testingSetFile, 2);
 
-    TestTrainData();
-    TestTestingData();
+    //TestTrainData();
+    //TestTestingData();
 }
 
 void Init()
@@ -681,13 +681,13 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
             infogain[i] = (infoGain0 - infoSum) / spitSum;
         }
         else {//consecutive, split to two subset(<= , and >)
-            printf("For Test 1:\n");
-            TestMap();
+            //printf("For Test 1:\n");
+            //TestMap();
             map[i].isConsecutive = 1;
             //TestMap();
             qsort(map[i].attributes, map[i].attributeNum, sizeof(map[i].attributes[0]),cmp);
-            printf("for test 2:\n");
-            TestMap();
+           // printf("for test 2:\n");
+           // TestMap();
             for (j = 1; j < map[i].attributeNum-1; ++j) {
                 ////////////////////////////////////////////////////////////////////////
                 for (k = 0; k < 2; ++k)
