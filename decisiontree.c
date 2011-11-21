@@ -874,7 +874,98 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
     TreeNode* tempNode = currentNode;
     slipattribute[slipAttributeNo] = 1; 
     if (map[slipAttributeNo].attributeNum >= 10)//consecutive
-    {}
+    {
+        for(i = 1; i <= numberOfTrainingRecord; i++)
+        {
+            tempData = trainingData[i];
+            if(MatchAttribute(levelNo,tempData,currentNode->pathAttributeName,currentNode->pathAttributeValue)!=0)
+            {
+                if (tempData[i] <= j) {
+                	attributeclassstate[0][tempData[0]]++; //<=
+                }
+                else {
+                	attributeclassstate[1][tempData[0]] ++;//>
+                }
+            }
+        }
+    
+        uint32_t ispureclass = 0;
+        for (j = 0; j < classNum; ++j)
+        {
+            if (attributeclassstate[0][j] != 0)//the first value of slipattribute, because the are index start from 0 to attri.num-1
+            {
+                ispureclass++;
+            }
+        }
+   
+        TreeNode* newNode;
+        int k;
+        if(ispureclass == 0)
+        {
+            newNode = (TreeNode*)malloc(sizeof(TreeNode));
+            memset(newNode,0,sizeof(TreeNode));
+            if(levelNo == 0){
+                newNode->pathAttributeName[levelNo] = currentNode->pathAttributeName[levelNo];
+            }
+            else{
+                for(k = 0;k <= levelNo-1;k++){
+                    newNode->pathAttributeName[k] = currentNode->pathAttributeName[k];
+                    newNode->pathAttributeValue[k] = currentNode->pathAttributeValue[k];
+                }
+                newNode->pathAttributeName[levelNo] = currentNode->pathAttributeName[levelNo];
+            
+            }
+       
+            newNode->pathAttributeValue[levelNo]=0;
+            newNode->isLeaf = 1;
+            newNode->selfLevel = levelNo+1;
+            newNode->childNode = NULL;
+            newNode->siblingNode = NULL;
+            newNode->classify = FindMaxClassLab(classNum,attributestate);
+            InsertIntoLeafList(newNode);
+        }
+        else{
+            newNode = GenerateDecisionTree(levelNo+1,currentNode->pathAttributeName,currentNode->pathAttributeValue,0);
+        
+        }
+        currentNode->childNode = newNode;
+        tempNode = newNode;
+
+        for(i = 1; i<=1;i++)
+        {
+            ispureclass = 0;
+            for(j = 0; j<=classNum-1; j++){
+                if(attributeclassstate[i][j]!=0)
+                    ispureclass++;
+            }
+            if(ispureclass == 0){
+                newNode = (TreeNode*)malloc(sizeof(TreeNode));
+                memset(newNode,0,sizeof(TreeNode));
+                if(levelNo == 0){
+                    newNode->pathAttributeName[levelNo] = currentNode->pathAttributeName[levelNo];
+                }
+                else{
+                    for(k = 0;k <= levelNo-1;k++){
+                        newNode->pathAttributeName[k] = currentNode->pathAttributeName[k];
+                        newNode->pathAttributeValue[k] = currentNode->pathAttributeValue[k];
+                    }
+                    newNode->pathAttributeName[levelNo] = currentNode->pathAttributeName[levelNo];
+                }
+                newNode->pathAttributeValue[levelNo]=i;
+                newNode->isLeaf = 1;
+                newNode->selfLevel = levelNo+1;
+                newNode->childNode = NULL;
+                newNode->siblingNode = NULL;
+                newNode->classify = FindMaxClassLab(classNum,attributestate);
+                InsertIntoLeafList(newNode);
+            }
+            else{
+                newNode = GenerateDecisionTree(levelNo+1,currentNode->pathAttributeName,currentNode->pathAttributeValue,i);
+            }
+            tempNode->siblingNode = newNode;
+            tempNode = newNode;
+        }
+    }
     else//discrete
     {
         for(i = 1; i <= numberOfTrainingRecord; i++)
