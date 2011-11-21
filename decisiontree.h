@@ -12,6 +12,8 @@ typedef struct
     char attributeName[MAXLEN];
     char **attributes;
     int attributeNum;
+    int isConsecutive; // isConsecutive == 1, then it is consecutive
+    int splitValue; //if is consecutive, the value is the split point;
 }AttributeMap;
 
 typedef struct tree_node 
