@@ -1063,15 +1063,10 @@ int main(int argc, char* argv[])
     TreeNode* root = NULL;
     uint32_t initPathAttributeName[MAXLEVELNUM + 1]={0};
     uint32_t initPathAttributeValue[MAXLEVELNUM + 1]={0};
-    /*for test
-    root = (TreeNode*)malloc (sizeof(TreeNode));
-    root->infoGain = 0.0;
-    printf ("%lf\n", root->infoGain);*/
     Read(argc, argv);
     Init();
- 
     root = GenerateDecisionTree(0, initPathAttributeName, initPathAttributeValue, 0);
-    //TestRead();
+    
     return 0;    
 }
 
