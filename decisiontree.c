@@ -407,6 +407,15 @@ void ConstructMap()
 			k++;
 			ptr = ptr->next;
 		}
+        
+        if (j > 0)
+        {
+            if (map[i].attributeNum > 10 && IsNumber(map[i].attributes[0]) == 1) //Consecutive
+            {
+                map[i].isConsecutive = 1;
+                qsort(map[i].attributes, map[i].attributeNum, sizeof(map[i].attributes[0]),cmp);
+            }
+        }
 
 		/* free the list */
 		while ((ptr = list)) {
@@ -696,7 +705,7 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
             infogain[i] = -100;
             continue;
         }
-        else if (map[i].attributeNum <= 10 && IsNumber(map[i].attributes[0]) == 0) //discrete
+        else if (map[i].isConsecutive == 0) //discrete
         {
             for (k = 0; k <= differValue; ++k)
             {
@@ -734,17 +743,14 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
                     }
                 }
 
-                spitSum += ((double)partSum/subpartitionnum)*(YuLog2((double)partSum/subpartitionnum)); 
+                spitSum += ((double)partSum/subpartitionnum)*(YuLog2((double)partSum/subpartitionnum)* (-1.0)); 
                 infoSum += ((double)partSum/subpartitionnum)*logSum; 
             }
 
             infogain[i] = (infoGain0 - infoSum) / spitSum;
         }
         else {//consecutive, split to two subset(<= , and >)
-            map[i].isConsecutive = 1;
-            //TestMap();
-            qsort(map[i].attributes, map[i].attributeNum, sizeof(map[i].attributes[0]),cmp);
-           // TestMap();
+            
             for (j = 1; j < map[i].attributeNum-1; ++j) {
                 for (k = 0; k < 2; ++k)
                 {
@@ -785,7 +791,7 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
                         }
                     }
                 
-                    spitSum += ((double)partSum/subpartitionnum)*(YuLog2((double)partSum/subpartitionnum)); 
+                    spitSum += ((double)partSum/subpartitionnum)*(YuLog2((double)partSum/subpartitionnum) * (-1.0)); 
                     infoSum += ((double)partSum/subpartitionnum)*logSum; 
             
                 }
@@ -940,7 +946,7 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
             tempData = trainingData[i];
             if(MatchAttribute(levelNo,tempData,currentNode->pathAttributeName,currentNode->pathAttributeValue)!=0)
             {
-                if (tempData[i] <= j) {
+                if (tempData[i] <= map[slipAttributeNo].splitValue) {
                 	attributeclassstate[0][tempData[0]]++; //<=
                 }
                 else {
@@ -1111,10 +1117,12 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
             else{
                 newNode = GenerateDecisionTree(levelNo+1,currentNode->pathAttributeName,currentNode->pathAttributeValue,i);
             }
+
             tempNode->siblingNode = newNode;
             tempNode = newNode;
         }
     }
+
     return currentNode;
 }
 
