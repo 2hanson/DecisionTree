@@ -112,7 +112,7 @@ void TestRawData(int flag)
 
 int cmp ( const void *a , const void *b )
 {
-    return strcmp( (*(char * const *)a) , (*(char * const *)b) );
+    return -strcmp( ((char *)a) , ((char*)b) );
 }
 
 // Calculates log2 of number.  
@@ -685,7 +685,7 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
             TestMap();
             map[i].isConsecutive = 1;
             //TestMap();
-//            qsort(map[i].attributes, map[i].attributeNum, MAXLEN-1,cmp);
+            qsort(map[i].attributes, map[i].attributeNum, sizeof(map[i].attributes[0]),cmp);
             printf("for test 2:\n");
             TestMap();
             for (j = 1; j < map[i].attributeNum-1; ++j) {
