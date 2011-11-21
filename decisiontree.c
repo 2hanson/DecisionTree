@@ -695,7 +695,7 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
     }
     slipattribute[0] = 1;//classLab
     
-    uint32_t attributestate[attributeNum+1];
+    uint32_t attributestate[attributeNum + 1];
     for (i = 0;  i <= attributeNum; ++i)
     {
         attributestate[i] = 0;
@@ -900,8 +900,8 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
 int main(int argc, char* argv[])
 {
     TreeNode* root = NULL;
-    uint32_t initPathAttributeName[MAXLEVELNUM]={0};
-    uint32_t initPathAttributeValue[MAXLEVELNUM]={0};
+    uint32_t initPathAttributeName[MAXLEVELNUM + 1]={0};
+    uint32_t initPathAttributeValue[MAXLEVELNUM + 1]={0};
     /*for test
     root = (TreeNode*)malloc (sizeof(TreeNode));
     root->infoGain = 0.0;
