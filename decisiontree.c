@@ -110,15 +110,24 @@ void TestTestingData()
 
 void TestMap()
 {
+    printf("test map\n");
     int j, i;
 
     for (j = 0; j <= attributeNum; ++j)
     {
         printf("attri: %s: has %d attrs\n", map[j].attributeName, map[j].attributeNum);
-        
+        if (map[j].isConsecutive == 0)
+        {
         for (i = 0; i < map[j].attributeNum; ++i)
         {
             printf("%s; ", map[j].attributes[i]);
+        }
+        }
+        else {
+            for (i = 0; i < map[j].attributeNum; ++i)
+            {
+                printf("%d; ", map[j].attributeValue[i]);
+            }
         }
         printf("\n");
     }
@@ -159,7 +168,7 @@ void TestVisitTree(TreeNode* root)
 
 int cmp ( const void *a , const void *b )
 {
-    return -strcmp( ((char *)a) , ((char*)b) );
+    return *(int*)a-*(int*)b;
 }
 
 // Calculates log2 of number.  
@@ -175,6 +184,14 @@ int ConvertString2Number(char* str)
    int i;
    for (i = 0; str[i] != '\0'; ++i)
    {
+       if (str[i] == '.')
+       {
+            if (str[i+1] > '5')
+            {
+                retNum += 1;
+            }
+            break;
+       }
        retNum *= 10;
        retNum += (str[i] - '0');
    }
@@ -189,8 +206,15 @@ int IsNumber(char* str)
    int i = 0;
    for (i = 0; str[i] != '\0'; ++i)
    {
-        if (str[i] < '0' || str[i] > '9')
-            return 0;
+       if (str[i] == '.')
+       {
+           continue;
+       }
+        
+       if (str[i] < '0' || str[i] > '9')
+       {
+           return 0;
+       }
    }
    return ret;
 }
@@ -413,7 +437,15 @@ void ConstructMap()
             if (map[j].attributeNum > 20 && IsNumber(map[j].attributes[0]) == 1) //Consecutive
             {
                 map[j].isConsecutive = 1;
-                qsort(map[j].attributes, map[j].attributeNum, sizeof(map[j].attributes[0]),cmp);
+                int a;
+                map[j].attributeValue = (int*) malloc(sizeof(int)*num);
+                for (a = 0; a < num; ++a)
+                {
+                    map[j].attributeValue[a] = ConvertString2Number(map[j].attributes[a]);
+                }
+                TestMap();
+                qsort(map[j].attributeValue, map[j].attributeNum, sizeof(map[j].attributeValue[0]),cmp);
+                TestMap();
             }
         }
 
@@ -440,15 +472,29 @@ int ConvertRawData2Map(int flag)
 		if (flag == 1) {
             while (i <= numberOfTrainingRecord)
             {
-                trainingData[i][j] = MapAttribute2Num(j, rawData[i][j]);
+                if (map[j].isConsecutive == 1)
+                {
+                    trainingData[i][j] = ConvertString2Number(rawData[i][j]);
+                }
+                else
+                {
+                    trainingData[i][j] = MapAttribute2Num(j, rawData[i][j]);
+                }
                 i++;
             }
 		}
 
         else if(flag == 2) {
-            while (i <= numberOfTestingRecord)
+            while (i<= numberOfTestingRecord)
             {
-    			testData[i][j] = MapAttribute2Num(j, rawData[i][j]);
+                if (map[j].isConsecutive == 1)
+                {
+                    testData[i][j] = ConvertString2Number(rawData[i][j]);
+                }
+                else
+                {
+    			    testData[i][j] = MapAttribute2Num(j, rawData[i][j]);
+                }
 	    		i++;
             }
 		}
@@ -764,7 +810,7 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
                 {
                     tempdata = trainingData[k];
                     if (MatchAttribute(levelNo, tempdata, pathAttributeNameMap, pathAttributeValueMap) != 0){
-                           if (tempdata[i] <= j) {
+                           if (tempdata[i] <= map[i].attributeValue[j]) {
                                 attributeclass[0][tempdata[0]]++; //<=
                            }
                            else {
@@ -798,14 +844,14 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
 
                 if (j == 1) {
                     infogain[i] = (infoGain0 - infoSum) / spitSum;
-                    map[i].splitValue = j;
+                    map[i].splitValue = map[i].attributeValue[j];
                 }
                 else {
                     double tempgain = (infoGain0 - infoSum) / spitSum;
                     if (tempgain > infogain[i])
                     {
                         infogain[i] = tempgain;
-                        map[i].splitValue = j;
+                        map[i].splitValue = map[i].attributeValue[j];
                     }
                 }
             }
@@ -1156,6 +1202,7 @@ int main(int argc, char* argv[])
     Read(argc, argv);
     Init();
     root = GenerateDecisionTree(0, initPathAttributeName, initPathAttributeValue, 0);
+    TestMap();
     TestVisitTree(root); 
   //  TestLeafList(); 
 //    TestInnerNodeList();
