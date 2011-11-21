@@ -23,6 +23,7 @@ char* testingSetFile;
 uint32_t ** confusionMatrix;
 uint32_t totalLevel;
 uint32_t differValue = 60;
+void VisitTree(TreeNode*);
 
 void TestRead()
 {
@@ -109,6 +110,11 @@ void TestRawData(int flag)
     }
 
     printf("\n\n");
+}
+
+void TestVisitTree(TreeNode* root)
+{
+    VisitTree(root);
 }
 
 int cmp ( const void *a , const void *b )
@@ -1090,11 +1096,6 @@ void VisitTree(TreeNode* currentNode)
     {
         VisitTree(currentNode->siblingNode);
     }
-}
-
-void TestVisitTree(TreeNode* root)
-{
-    VisitTree(root);
 }
 
 int main(int argc, char* argv[])
