@@ -138,21 +138,21 @@ int ConvertString2Number(char* str)
 void Read(int argc, char* argv[])
 {
     int k;
-    printf("start\n");
+    //printf("start\n");
     for (k = 1; k < argc; ++k)
     {
-        printf("%s\n", argv[k]);
+      //  printf("%s\n", argv[k]);
         if (strcmp(argv[k],"-r") == 0)
         {
             ++k;
             trainingSetFile = argv[k];
-            printf("argv1 = %s\n", argv[k-1]);
+        //    printf("argv1 = %s\n", argv[k-1]);
         }
         else if (!strcmp(argv[k], "-t"))
         {
             ++k;
             testingSetFile = argv[k];
-            printf("argv2 = %s\n", argv[k-1]);
+          //  printf("argv2 = %s\n", argv[k-1]);
         }
         else if (!strcmp(argv[k], "-d"))
         {
