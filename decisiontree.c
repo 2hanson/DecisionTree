@@ -928,6 +928,8 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
     double infogain = 0;
     slipAttributeNo = SelectAttributeByRule(levelNo, currentNode->pathAttributeName, currentNode->pathAttributeValue,
             subPartitionNum, slipattribute, &infogain, &majorClass);//this function have to change the value of majorclass and infogain
+    if (slipAttributeNo == 0)
+        return NULL;
     currentNode->classify = 0;
     currentNode->isLeaf = 0;
     currentNode->selfLevel = levelNo;
@@ -1132,7 +1134,7 @@ void VisitTree(TreeNode* currentNode)
     printf("level %d\n", currentNode->selfLevel);
     for (i = 0; i <= currentNode->selfLevel; ++i)
     {
-        printf("nameIndex: %d; value: %d;;;;", currentNode->pathAttributeName[i], currentNode->pathAttributeValue[i]);
+        printf("nameIndex: %d; value: %d, isleaf: %d;;;;", currentNode->pathAttributeName[i], currentNode->pathAttributeValue[i], currentNode->isLeaf);
     }
     printf("\n");
     if (currentNode->childNode != NULL)
