@@ -702,7 +702,7 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
                 {
                     tempdata = trainingData[k];
                     if (MatchAttribute(levelNo, tempdata, pathAttributeNameMap, pathAttributeValueMap) != 0){
-                           if (tempdata[i] <= map[i].attributes[j]) {
+                           if (tempdata[i] <= j) {
                                 attributeclass[0][tempdata[0]]++; //<=
                            }
                            else {
@@ -711,15 +711,15 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
                     }
                 }
 
-                splitsum = 0;
+                spitSum = 0;
                 for (k = 0; k < 2; ++k) {
-                    partsum = 0;
+                    partSum = 0;
     
                     for (h = 0; h < classNum; ++h) {
-                        partsum += attributeclass[k][h];
+                        partSum += attributeclass[k][h];
                     }
 
-                    logsum = 0;
+                    logSum = 0;
                 
                     for (h = 0; h < classNum; ++h)
                     {
@@ -739,7 +739,7 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
                     map[i].splitValue = j;
                 }
                 else {
-                    double tempgain = (infoGain0 - infoSum) / splitSum;
+                    double tempgain = (infoGain0 - infoSum) / spitSum;
                     if (tempgain > infogain[i])
                     {
                         infogain[i] = tempgain;
