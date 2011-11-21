@@ -687,13 +687,13 @@ void InsertIntoInnerList(uint32_t levelNo,TreeNode* innerNode)
 
 uint32_t FindMaxValue(uint32_t len, double arr[])
 {
-    uint32_t i = 1, min = 1;
+    uint32_t i = 1, max = 1;
     for (i = 2; i <= len; i++) {
-        if (arr[min] < arr[i])
-            min = i;
+        if (arr[max] < arr[i])
+            max = i;
     }
     
-    return min;
+    return max;
 }
 
 uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap, uint32_t* pathAttributeValueMap,
