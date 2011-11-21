@@ -1072,6 +1072,31 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
     return currentNode;
 }
 
+void VisitTree(TreeNode* currentNode)
+{
+    int i;
+    printf("%d\n", currentNode->selfLevel);
+    for (i = 0; i <= currentNode->selfLevel; ++i)
+    {
+        printf("%d; ", currentNode->pathAttributeName[i]);
+    }
+    printf("\n");
+    if (currentNode->childNode != NULL)
+    {
+      VisitTree(currentNode->childNode);  
+    }
+    
+    if (currentNode->siblingNode != NULL)
+    {
+        VisitTree(currentNode->siblingNode);
+    }
+}
+
+void TestVisitTree(TreeNode* root)
+{
+    VisitTree(root);
+}
+
 int main(int argc, char* argv[])
 {
     TreeNode* root = NULL;
@@ -1080,7 +1105,7 @@ int main(int argc, char* argv[])
     Read(argc, argv);
     Init();
     root = GenerateDecisionTree(0, initPathAttributeName, initPathAttributeValue, 0);
-    
-    return 0;    
+   TestVisitTree(root); 
+    return 0; 
 }
 
