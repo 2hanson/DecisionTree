@@ -1169,7 +1169,7 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
             InsertIntoLeafList(newNode);
         }
         else{
-            newNode = GenerateDecisionTree(levelNo+1,currentNode->pathAttributeName,currentNode->pathAttributeValue,currentNode->pathFlag, 0, 0);
+            newNode = GenerateDecisionTree(levelNo+1,currentNode->pathAttributeName,currentNode->pathAttributeValue,currentNode->pathFlag, 0, 2);
         
         }
         currentNode->childNode = newNode;
@@ -1204,7 +1204,7 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
                 InsertIntoLeafList(newNode);
             }
             else{
-                newNode = GenerateDecisionTree(levelNo+1,currentNode->pathAttributeName,currentNode->pathAttributeValue,currentNode->pathFlag, i, 1);
+                newNode = GenerateDecisionTree(levelNo+1,currentNode->pathAttributeName,currentNode->pathAttributeValue,currentNode->pathFlag, i, 3);
             }
 
             tempNode->siblingNode = newNode;
@@ -1245,7 +1245,7 @@ int main(int argc, char* argv[])
     Init();
     root = GenerateDecisionTree(0, initPathAttributeName, initPathAttributeValue, initPathFlag, 0, 0);
     TestMap();
-//    TestVisitTree(root); 
+    TestVisitTree(root); 
   //  TestLeafList(); 
 //    TestInnerNodeList();
     return 0; 
