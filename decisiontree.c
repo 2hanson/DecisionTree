@@ -1508,11 +1508,10 @@ int main(int argc, char* argv[])
     uint32_t initPathFlag[MAXLEVELNUM + 1] = {0};
     Read(argc, argv);
     Init();
-    int t1 = time(NULL);
+    clock_t start, end;
+    start = clock();
 
     root = GenerateDecisionTree(0, initPathAttributeName, initPathAttributeValue, initPathFlag, 0, 0);
-
-    int t2 = time(NULL);
 
     FILE *fp=fopen("output.txt","w");
     if (!fp) {
@@ -1527,11 +1526,13 @@ int main(int argc, char* argv[])
 
     OutputRule(fp,leafList);
     RunTestData(root);
+    
+    end = clock();
     OutputConfusionMatrix(fp);
     OutputAccuracyRating(fp);
 
     //printf elapsed time
-    fprintf( fp,"Elapsed time: \n %d seconds\n\n", t2-t1);
+    fprintf( fp,"Elapsed time: \n %lf seconds\n\n", (double)(end-start)/CLOCKS_PER_SEC);
     fclose(fp);
     return 0;
 }
