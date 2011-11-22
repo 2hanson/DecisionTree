@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 
 AttributeMap* map; 
 //attribute is range from 1 to attributenum. colcume 0 is the classLab
@@ -1416,16 +1417,21 @@ int main(int argc, char* argv[])
     Read(argc, argv);
     Init();
     //t
+    int t1 = time(NULL);
+
     root = GenerateDecisionTree(0, initPathAttributeName, initPathAttributeValue, initPathFlag, 0, 0);
     //TestMap();
     TestVisitTree(root); 
+    int t2 = time(NULL);
+
     OutputRule(leafList);
-    
     RunTestData(root);
     OutputConfusionMatrix();
     OutputAccuracyRating();
-    //  TestLeafList(); 
-//    TestInnerNodeList();
+    
+    //printf elapsed time
+    printf( "Elapsed time: \n %d seconds\n\n", t2-t1);
+
     return 0; 
 }
 
