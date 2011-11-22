@@ -498,6 +498,19 @@ int ConvertRawData2Map(int flag)
 	return 0;
 }
 
+void InitDefaultMapName()
+{
+    int j;
+    char str[10];
+    strcpy(map[0].attributeName, "classLab");
+    for (j = 1; j <= attributeNum; j++)
+    {
+        strcpy(map[j].attributeName, "attribute");
+        itoa(j, str, 10);
+        strcat(map[j].attributeName, str);
+    }
+}
+
 void OnReadData(char* filename, int flag/*training or testing*/)
 {
     //
@@ -524,6 +537,7 @@ void OnReadData(char* filename, int flag/*training or testing*/)
     }
     /* read all the data */
     i = 0; 
+    int isNotName = 0;
     while (i <= totalnum) {
         char *ptr = fgets(buffer, n, fp);
         if (!ptr) {
@@ -549,10 +563,10 @@ void OnReadData(char* filename, int flag/*training or testing*/)
                 exit(-1);
             }
         }
+        
         //attribute is range from 1 to attributenum. colcume 0 is the classLab
         if (i == 0)
         {
-
             for (j = 0; j <= attributeNum-1; j++) {
                 end = strchr(begin, (int)('\t'));
                 if (!end)
@@ -564,7 +578,26 @@ void OnReadData(char* filename, int flag/*training or testing*/)
                     fprintf(stderr, "line 404 tab wasn't found.\n");
                     exit(-1);
                 }
-                strncpy(map[j].attributeName, begin, end - begin);
+                if (isNotName == 0)
+                {
+                    strncpy(map[j].attributeName, begin, end - begin);
+                }
+                else {
+                    memset(rawData[1][j], 0, MAXLEN);
+                    strncpy(rawData[1][j], begin, end - begin);
+                }
+                if (j == 1) {
+                    if (IsNumber(map[j].attributeName))
+                    {
+                        
+                        memset(rawData[1][0], 0, MAXLEN);
+                        strcpy(rawData[1][0], map[0].attributeName);
+                        memset(rawData[1][1], 0, MAXLEN);
+                        strncpy(rawData[1][1], begin, end - begin);
+                        InitDefaultMapName();
+                        isNotName = 1;
+                    }
+                }
                 begin = end + 1;
             };
             end = strchr(begin, (int)('\r'));
@@ -574,10 +607,23 @@ void OnReadData(char* filename, int flag/*training or testing*/)
             }
         
             if (end) {
-                strncpy(map[j].attributeName, begin, end - begin);
+                if (isNotName == 0){
+                    strncpy(map[j].attributeName, begin, end - begin);
+                }
+                else {
+                    memset(rawData[1][j], 0, MAXLEN);
+                    strncpy(rawData[1][j], begin, end - begin);
+                }
             }
             else {
-                strcpy(map[j].attributeName, begin);
+                if (isNotName ==0)
+                {
+                    strcpy(map[j].attributeName, begin);
+                }
+                else {
+                    memset(rawData[1][j], 0, MAXLEN);
+                    strcpy(rawData[1][j], begin);
+                }
             }
             
             i++;
@@ -1275,7 +1321,7 @@ void VisitTree(TreeNode* currentNode)
 
 void OutputRule(TreeNode* outputleaflist)
 {
-    printf("\nthis rule number is:\n");
+    printf("\nthis rule is:\n");
     TreeNode* tempNode = NULL;
     tempNode = outputleaflist->nextLeaf;
     int ruleNum = 1;
