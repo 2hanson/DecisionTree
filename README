@@ -2,6 +2,13 @@ Written by hanson(hangzhong.yu@gmail.com) at date 11/19/2011.
 
 compile command : gcc decisiontree.c -lm -o decisiontree
 then: ./decisiontree -r trainning.txt -t testing.txt -d 3 -c 2 -s 499 -m 200 -p 0
+     -r <Training data file>
+     -t <Testing data file >
+     -d <Number of attributes constructing a record>
+     -c <Number of classes>
+     -s <Number of training records in the training data file>
+     -m <Number of testing records in the testing data file>
+     -p <printing the prediction results or not, 1 or 0>
 
 Input Module:
 convert attribute to number,
@@ -30,9 +37,8 @@ for instance:
 
 GenerageDecisionTree: have done
 
-then output is ongoing.
+then output modele have done.
+output the tree view, rule, confusiong matrix and execute time
 
-the bug:
 
-1. line1016 i -> slipAttributeNo
-2. matchattribute() when enconter a consecutive attribute cannot work right.
+
