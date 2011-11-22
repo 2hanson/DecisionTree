@@ -1385,6 +1385,28 @@ void OutputConfusionMatrix()
     printf("\n\n");
 }
 
+void OutputAccuracyRating()
+{
+    printf("\naccuracy rating:\n");
+    int i, j;
+    int rightsum = 0;
+    int totalsum = 0;
+    for (i = 0; i < classNum; ++i)
+    {
+        for (j = 0; j < classNum; ++j)
+        {
+            if (i == j)
+            {
+                rightsum += confusionMatrix[i][j];
+            }
+            totalsum += confusionMatrix[i][j];
+        }
+    }
+    double ans = 1.0*rightsum/totalsum;
+    printf("%lf\n", ans);
+    printf("\n\n");
+}
+
 int main(int argc, char* argv[])
 {
     TreeNode* root = NULL;
@@ -1393,6 +1415,7 @@ int main(int argc, char* argv[])
     uint32_t initPathFlag[MAXLEVELNUM + 1] = {0};
     Read(argc, argv);
     Init();
+    //t
     root = GenerateDecisionTree(0, initPathAttributeName, initPathAttributeValue, initPathFlag, 0, 0);
     //TestMap();
     TestVisitTree(root); 
@@ -1400,6 +1423,7 @@ int main(int argc, char* argv[])
     
     RunTestData(root);
     OutputConfusionMatrix();
+    OutputAccuracyRating();
     //  TestLeafList(); 
 //    TestInnerNodeList();
     return 0; 
