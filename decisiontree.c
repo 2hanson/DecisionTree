@@ -526,7 +526,7 @@ void OnReadData(char* filename, int flag/*training or testing*/)
     while (i <= totalnum) {
         char *ptr = fgets(buffer, n, fp);
         if (!ptr) {
-            fprintf(stderr, "line 377 err.\n");
+            fprintf(stderr, "please add the attribute name!!!!.\n");
             exit(-1);
         }
         begin = buffer;
@@ -1256,6 +1256,8 @@ void VisitTree(TreeNode* currentNode)
         }
         else printf("=");
         printf("%d",currentNode->pathAttributeValue[level-1]);
+        if (currentNode->isLeaf==1) 
+            printf("----> %d",currentNode->classify);
     }
     printf("\n");
     if (currentNode->childNode != NULL)
