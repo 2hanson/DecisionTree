@@ -850,8 +850,11 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
                         logSum += ((double)attributeclass[j][g]/partSum)*(YuLog2((double)attributeclass[j][g]/partSum)*(-1));
                     }
                 }
+                if (partSum != 0)
+                {
+                    spitSum += ((double)partSum/subpartitionnum)*(YuLog2((double)partSum/subpartitionnum)* (-1.0));
+                }
 
-                spitSum += ((double)partSum/subpartitionnum)*(YuLog2((double)partSum/subpartitionnum)* (-1.0));
                 infoSum += ((double)partSum/subpartitionnum)*logSum;
             }
 
@@ -896,8 +899,10 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
                             logSum += ((double)attributeclass[k][h]/partSum)*(YuLog2((double)attributeclass[k][h]/partSum)*(-1));
                         }
                     }
-
-                    spitSum += ((double)partSum/subpartitionnum)*(YuLog2((double)partSum/subpartitionnum) * (-1.0));
+                    if (partSum != 0)
+                    {
+                        spitSum += ((double)partSum/subpartitionnum)*(YuLog2((double)partSum/subpartitionnum) * (-1.0));
+                    }
                     infoSum += ((double)partSum/subpartitionnum)*logSum;
                 }
 
@@ -1246,20 +1251,37 @@ void VisitTree(FILE* fp,TreeNode* currentNode)
 {
     int i;
     int level=currentNode->selfLevel;
-    for (i=0;i<=level-1;i++) fprintf(fp,"   ");
+    for (i=0;i<=level-1;i++) 
+        fprintf(fp,"   ");
     fprintf(fp,"level %d: ", currentNode->selfLevel);
-    if (level>0){
+
+    if (level > 0)
+    {
         fprintf(fp,"%s",map[currentNode->pathAttributeName[level-1]].attributeName);
         if (map[currentNode->pathAttributeName[level-1]].isConsecutive)
         {
-          if (currentNode->pathFlag[level-1]==0) fprintf(fp,"<=");
-                else fprintf(fp,">");
+          if (currentNode->pathFlag[level-1]==0) 
+              fprintf(fp,"<=");
+          else 
+              fprintf(fp,">");
         }
-        else fprintf(fp,"=");
-        fprintf(fp,"%d",currentNode->pathAttributeValue[level-1]);
+        else 
+            fprintf(fp,"=");
+            
+
+        if (map[currentNode->pathAttributeName[0]].isConsecutive == 0)//discrete
+        {
+            fprintf(fp,"%s", map[currentNode->pathAttributeName[0]].attributes[currentNode->pathAttributeValue[level-1]]);
+        }
+        else {//
+            fprintf(fp,"%d", currentNode->pathAttributeValue[level-1]);
+        }
     }
     if (currentNode->isLeaf==1)
-            fprintf(fp,"----> %d",currentNode->classify);
+    {
+            fprintf(fp,"----> %s",map[0].attributes[currentNode->classify]);
+    }
+
     fprintf(fp,"\n");
     if (currentNode->childNode != NULL)
     {
