@@ -592,10 +592,6 @@ void OnReadData(char* filename, int flag/*training or testing*/)
             {
                 begin = end+1;
             }
-            else if ( (end = strchr(begin, (int)(' '))) )
-            {
-                begin = end+1;
-            }
             else
             {
                 fprintf(stderr, "line tab wasn't found");
@@ -605,10 +601,6 @@ void OnReadData(char* filename, int flag/*training or testing*/)
         //attribute is range from 1 to attributenum. colcume 0 is the classLab
         for (j = 0; j <= attributeNum-1; j++) {
             end = strchr(begin, (int)('\t'));
-            if (!end)
-            {
-                end = strchr(begin, (int)(' '));
-            }
 
             if (!end) {
                 fprintf(stderr, "line 404 tab wasn't found.\n");
