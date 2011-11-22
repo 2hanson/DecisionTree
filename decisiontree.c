@@ -1356,6 +1356,11 @@ void RunDataOnDecisionTree(FILE* fp, TreeNode* root, uint32_t* testdata, uint32_
                 result = result % (classNum);
                 confusionMatrix[testdata[0]%classNum][result] ++;
                 ismatched = 1;
+
+                if (isPrintResult == 1)
+                {
+                    fprintf(fp, "%s .", map[0].attributes[result]);
+                }
                 break;
             }
             else {
@@ -1372,13 +1377,14 @@ void RunDataOnDecisionTree(FILE* fp, TreeNode* root, uint32_t* testdata, uint32_
     {
         result = root->majorClass;
         result = result%classNum;
+
+        if (isPrintResult == 1)
+        {
+            fprintf(fp, "%s .", map[0].attributes[result]);
+        }
         confusionMatrix[testdata[0]%classNum][result]++;
     }
 
-    if (isPrintResult == 1)
-    {
-        fprintf(fp, "%s .", map[0].attributes[result]);
-    }
 }
 
 void RunTestData(FILE* fp, TreeNode* root)
