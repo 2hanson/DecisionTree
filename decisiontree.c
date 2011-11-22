@@ -1271,7 +1271,7 @@ void VisitTree(FILE* fp,TreeNode* currentNode)
 
         if (map[currentNode->pathAttributeName[0]].isConsecutive == 0)//discrete
         {
-            fprintf(fp,"%s", map[currentNode->pathAttributeName[0]].attributes[currentNode->pathAttributeValue[level-1]]);
+            fprintf(fp,"%s", map[currentNode->pathAttributeName[level - 1]].attributes[currentNode->pathAttributeValue[level-1]]);
         }
         else {//
             fprintf(fp,"%d", currentNode->pathAttributeValue[level-1]);
