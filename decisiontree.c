@@ -223,21 +223,17 @@ int IsNumber(char* str)
 void Read(int argc, char* argv[])
 {
     int k;
-    //printf("start\n");
     for (k = 1; k < argc; ++k)
     {
-      //  printf("%s\n", argv[k]);
         if (strcmp(argv[k],"-r") == 0)
         {
             ++k;
             trainingSetFile = argv[k];
-        //    printf("argv1 = %s\n", argv[k-1]);
         }
         else if (!strcmp(argv[k], "-t"))
         {
             ++k;
             testingSetFile = argv[k];
-          //  printf("argv2 = %s\n", argv[k-1]);
         }
         else if (!strcmp(argv[k], "-d"))
         {
@@ -268,8 +264,6 @@ void Read(int argc, char* argv[])
             printf("input error, please check you input\n");
         }
     }
-
-    //TestRead();
 }
 
 void ConvertNum2Str(int num, char str[10])
@@ -488,7 +482,6 @@ void ConstructMap()
 		num = 0;
 	}
 
-    //TestMap();
 }
 
 
@@ -534,7 +527,6 @@ int ConvertRawData2Map(int flag)
 
 void OnReadData(char* filename, int flag/*training or testing*/)
 {
-    //
     FILE *fp = fopen(filename, "r+");
     
     if (!fp) {
@@ -546,8 +538,6 @@ void OnReadData(char* filename, int flag/*training or testing*/)
     char buffer[1024];
     char *begin = NULL, *end = NULL;
     int totalnum;
-    //fgets(buffer, n, fp);
-    //begin = buffer;
     if (flag == 1)
     {
         totalnum = numberOfTrainingRecord;
@@ -621,55 +611,37 @@ void OnReadData(char* filename, int flag/*training or testing*/)
         ConstructMap();
     }
     ConvertRawData2Map(flag);
-    //TestRawData(flag);
 }
 
 void ReadData()
 {
     OnReadData(trainingSetFile,1);
-
     OnReadData(testingSetFile, 2);
-
-    //TestTrainData();
-    //TestTestingData();
 }
 
 void Init()
 {
-    /*
-     *-r training.txt -t testing.txt -d 65 -c 2 -s 32768 -m 2000 –p 0
-    int k;
-    printf("argc = %d\n", argc);*/
-    
     uint32_t i, j;
     uint32_t choice = 0;
-
     for (i = 0; i <= MAXLEVELNUM-1; ++i)
     {
         innerNodeList[i] = (TreeNode*)malloc(sizeof(TreeNode));
         memset(innerNodeList[i], 0, sizeof(TreeNode));
-
         curInnerNode[i] = innerNodeList[i];
     }
 
     leafList= (TreeNode*)malloc(sizeof(TreeNode));
     memset(leafList, 0, sizeof(TreeNode));
     curLeaf = leafList;
-
     confusionMatrix = (uint32_t **)malloc(classNum*sizeof(uint32_t));
     memset(confusionMatrix, 0, classNum*sizeof(uint32_t));
     for(i = 0;i<=classNum-1;i++){
         confusionMatrix[i] = (uint32_t*)malloc(classNum*sizeof(uint32_t));
         memset(confusionMatrix[i],0,classNum*sizeof(uint32_t));
     }
-     
     //
     MallocMemory();
     ReadData();
-}
-
-void TestPath()
-{
 }
 
 uint32_t MatchAttribute(const uint32_t levelNo,uint32_t *test, uint32_t* pathAttributeNameMap,uint32_t* pathAttributeValueMap, uint32_t* pathFlag)
@@ -750,12 +722,12 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
 {
     uint32_t attributestate[classNum];
     uint32_t attributeclass[differValue][classNum];
-
     int i, j;
     for (i = 0; i < classNum; ++i)
     {
         attributestate[i] = 0;
     }
+    
     double infogain[attributeNum + 1];
     for (i = 1; i <= attributeNum; ++i)
     {
@@ -763,7 +735,6 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
     }
 
     infogain[0] = -100;
-    
     for (i = 1; i < differValue; ++i )
     {
         for (j = 0;  j < classNum; ++j)
@@ -845,7 +816,6 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
             infogain[i] = (infoGain0 - infoSum) / spitSum;
         }
         else {//consecutive, split to two subset(<= , and >)
-            
             for (j = 1; j < map[i].attributeNum-1; ++j) {
                 for (k = 0; k < 2; ++k)
                 {
@@ -877,7 +847,6 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
                     }
 
                     logSum = 0;
-                
                     for (h = 0; h < classNum; ++h)
                     {
                         if (attributeclass[k][h] != 0)
@@ -888,7 +857,6 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
                 
                     spitSum += ((double)partSum/subpartitionnum)*(YuLog2((double)partSum/subpartitionnum) * (-1.0)); 
                     infoSum += ((double)partSum/subpartitionnum)*logSum; 
-            
                 }
 
                 if (j == 1) {
@@ -917,14 +885,13 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
         uint32_t pathAttributeValueMap[MAXLEVELNUM+1], uint32_t pathFlag[MAXLEVELNUM+1], uint32_t slipAttrValue, uint32_t flag)
 {
     int i, j;
-
     uint32_t slipattribute[attributeNum + 1];
     for (i = 1; i <= attributeNum; ++i)
     {
         slipattribute[i] = 0;
     }
-    slipattribute[0] = 1;//classLab
     
+    slipattribute[0] = 1;//classLab
     uint32_t attributestate[differValue];
     for (i = 0;  i <= differValue-1; ++i)
     {
@@ -951,7 +918,6 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
 
     TreeNode* currentNode = (TreeNode*)malloc(sizeof(TreeNode));
     memset(currentNode,0,sizeof(TreeNode));
-    
     if(levelNo > 1){
         for(i = 0;i<=levelNo-2;i++){
             currentNode->pathAttributeName[i] = pathAttributeNameMap[i];
@@ -991,13 +957,6 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
             currentClass = i;
         }
     }
-    if (testPure == 0) {
-        
-        for(i = 0;i<=levelNo-1;i++){
-           printf("level = %d, %d %d %d\n",i,  currentNode->pathAttributeName[i], currentNode->pathAttributeValue[i], currentNode->pathFlag[i]);
-        }
-        printf("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n");
-    }
     for (i = 1; i <= attributeNum; ++i)
     {
         if (slipattribute[i] != 1)
@@ -1033,14 +992,12 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
     
     int slipvalueforconsecutive;
 
-    ////////////////////////////////////////bug
     slipAttributeNo = SelectAttributeByRule(levelNo, currentNode->pathAttributeName, currentNode->pathAttributeValue, currentNode->pathFlag,
             subPartitionNum, slipattribute, &infogain, &majorClass, &slipvalueforconsecutive);//this function have to change the value of majorclass and infogain
     if (slipAttributeNo == 0)
     {
         printf("fuck");
     }
-//        return NULL;
     currentNode->classify = 0;
     currentNode->isLeaf = 0;
     currentNode->selfLevel = levelNo;
@@ -1417,11 +1374,9 @@ int main(int argc, char* argv[])
     uint32_t initPathFlag[MAXLEVELNUM + 1] = {0};
     Read(argc, argv);
     Init();
-    //t
     int t1 = time(NULL);
 
     root = GenerateDecisionTree(0, initPathAttributeName, initPathAttributeValue, initPathFlag, 0, 0);
-    //TestMap();
     TestVisitTree(root); 
     int t2 = time(NULL);
 
