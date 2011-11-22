@@ -655,7 +655,7 @@ uint32_t MatchAttribute(const uint32_t levelNo,uint32_t *test, uint32_t* pathAtt
     uint32_t i = 0;
     for(i = 0; i <= levelNo - 1; i++)
     {
-        if (map[i].isConsecutive == 0)
+        if ( map[pathAttributeNameMap[i] ].isConsecutive == 0)
         {
             if(test[pathAttributeNameMap[i]]!=pathAttributeValueMap[i])
                 return 0;
@@ -1012,7 +1012,10 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
     slipAttributeNo = SelectAttributeByRule(levelNo, currentNode->pathAttributeName, currentNode->pathAttributeValue, currentNode->pathFlag,
             subPartitionNum, slipattribute, &infogain, &majorClass, &slipvalueforconsecutive);//this function have to change the value of majorclass and infogain
     if (slipAttributeNo == 0)
-        return NULL;
+    {
+        printf("fuck");
+    }
+//        return NULL;
     currentNode->classify = 0;
     currentNode->isLeaf = 0;
     currentNode->selfLevel = levelNo;
@@ -1245,7 +1248,7 @@ int main(int argc, char* argv[])
     Init();
     root = GenerateDecisionTree(0, initPathAttributeName, initPathAttributeValue, initPathFlag, 0, 0);
     TestMap();
-    TestVisitTree(root); 
+//    TestVisitTree(root); 
   //  TestLeafList(); 
 //    TestInnerNodeList();
     return 0; 
