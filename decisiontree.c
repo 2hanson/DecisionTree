@@ -1248,7 +1248,7 @@ int main(int argc, char* argv[])
     Init();
     root = GenerateDecisionTree(0, initPathAttributeName, initPathAttributeValue, initPathFlag, 0, 0);
     TestMap();
-//    TestVisitTree(root); 
+    TestVisitTree(root); 
   //  TestLeafList(); 
 //    TestInnerNodeList();
     return 0; 
