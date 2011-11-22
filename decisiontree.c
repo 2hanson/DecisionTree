@@ -162,7 +162,7 @@ void TestRawData(int flag)
 
 void TestVisitTree(TreeNode* root)
 {
-    printf("test tree\n");
+    printf("tree View:\n");
     VisitTree(root);
 }
 
@@ -1274,6 +1274,7 @@ void VisitTree(TreeNode* currentNode)
 
 void OutputRule(TreeNode* outputleaflist)
 {
+    printf("\nthis rule number is:\n");
     TreeNode* tempNode = NULL;
     tempNode = outputleaflist->nextLeaf;
     int ruleNum = 1;
@@ -1320,7 +1321,6 @@ void OutputRule(TreeNode* outputleaflist)
         ++ruleNum;
     }
     
-    printf("this rule number is %d:\n", ruleNum);
 }
 
 void RunDataOnDecisionTree(TreeNode* root, uint32_t* testdata, uint32_t** confusionMatrix)
@@ -1369,6 +1369,22 @@ void RunTestData(TreeNode* root)
     }
 }
 
+void OutputConfusionMatrix()
+{
+    printf("\nconfusion matrix:\n");
+    int i, j;
+    for (i = 0; i < classNum; ++i)
+    {
+        for (j = 0; j < classNum; ++j)
+        {
+            printf("%d ", confusionMatrix[i][j]);
+        }
+        printf("\n");
+    }
+
+    printf("\n\n");
+}
+
 int main(int argc, char* argv[])
 {
     TreeNode* root = NULL;
@@ -1383,7 +1399,8 @@ int main(int argc, char* argv[])
     OutputRule(leafList);
     
     RunTestData(root);
-  //  TestLeafList(); 
+    OutputConfusionMatrix();
+    //  TestLeafList(); 
 //    TestInnerNodeList();
     return 0; 
 }
