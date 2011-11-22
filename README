@@ -40,5 +40,5 @@ GenerageDecisionTree: have done
 then output modele have done.
 output the tree view, rule, confusiong matrix and execute time
 
-
+have cope with both discrete data and consecutive data
 
