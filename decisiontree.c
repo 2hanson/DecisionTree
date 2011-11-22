@@ -364,7 +364,7 @@ void MallocMemory()
     }
 
     for (i = 0; i <= numberOfTrainingRecord; i++) {
-        trainingData[i] = (int *)malloc(sizeof(int) *(attributeNum+1));
+        trainingData[i] = (uint32_t *)malloc(sizeof(uint32_t) *(attributeNum+1));
         if (!trainingData[i]) {
             fprintf(stderr, "malloc memory failed, abort.\n");
                 abort();
@@ -1353,7 +1353,8 @@ void RunDataOnDecisionTree(TreeNode* root, uint32_t* testdata, uint32_t** confus
             if (tempNode->isLeaf == 1)
             {
                 result = tempNode->classify;
-                confusionMatrix[testdata[0]][result] ++;
+                result = result % (classNum);
+                confusionMatrix[testdata[0]%classNum][result] ++;
                 ismatched = 1;
                 break;
             }
@@ -1370,7 +1371,8 @@ void RunDataOnDecisionTree(TreeNode* root, uint32_t* testdata, uint32_t** confus
     if (ismatched == 0)
     {
         result = root->majorClass;
-        confusionMatrix[testdata[0]][result]++;
+        result = result%classNum;
+        confusionMatrix[testdata[0]%classNum][result]++;
     }
 }
 
@@ -1436,9 +1438,9 @@ void DeleteTree(TreeNode* T)
    }
 
 }
+
 double  EstimateErrors(TreeNode* T)
 {
-
     uint32_t subPartitionNum = 0; // the count of records fellow this path.
     uint32_t * tempData = NULL;
     TreeNode* currentNode=T;
