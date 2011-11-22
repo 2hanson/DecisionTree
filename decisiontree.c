@@ -1337,7 +1337,7 @@ void OutputRule(FILE* fp,TreeNode* outputleaflist)
 
 }
 
-void RunDataOnDecisionTree(TreeNode* root, uint32_t* testdata, uint32_t** confusionMatrix)
+void RunDataOnDecisionTree(FILE* fp, TreeNode* root, uint32_t* testdata, uint32_t** confusionMatrix)
 {
     uint32_t ismatched = 0;
 
@@ -1360,7 +1360,7 @@ void RunDataOnDecisionTree(TreeNode* root, uint32_t* testdata, uint32_t** confus
             }
             else {
                 ismatched = 1;
-                RunDataOnDecisionTree(tempNode, testdata, confusionMatrix);
+                RunDataOnDecisionTree(fp, tempNode, testdata, confusionMatrix);
                 break;
             }
         }
@@ -1374,14 +1374,27 @@ void RunDataOnDecisionTree(TreeNode* root, uint32_t* testdata, uint32_t** confus
         result = result%classNum;
         confusionMatrix[testdata[0]%classNum][result]++;
     }
+
+    if (isPrintResult == 1)
+    {
+        fprintf(fp, "%s .", map[0].attributes[result]);
+    }
 }
 
-void RunTestData(TreeNode* root)
+void RunTestData(FILE* fp, TreeNode* root)
 {
     int i;
     for (i = 1; i <= numberOfTestingRecord; ++i)
     {
-        RunDataOnDecisionTree(root, testData[i], confusionMatrix);
+        if (isPrintResult == 1)
+        {
+            fprintf(fp, "test data%d's predict result is: ", i);
+        }
+        RunDataOnDecisionTree(fp, root, testData[i], confusionMatrix);
+        if (isPrintResult)
+        {
+            fprintf(fp, "\n");
+        }
     }
 }
 
@@ -1521,11 +1534,18 @@ int main(int argc, char* argv[])
     }
 
     PostPrune(fp,root);
-
+    
     TestVisitTree(fp,root);
 
     OutputRule(fp,leafList);
-    RunTestData(root);
+    
+
+    if (isPrintResult == 1)
+    {
+        fprintf(fp, "Predict Result is:\n");    
+    }
+
+    RunTestData(fp, root);
     
     end = clock();
     OutputConfusionMatrix(fp);
