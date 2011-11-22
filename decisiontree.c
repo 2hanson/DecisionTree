@@ -969,7 +969,7 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
     if (testPure == 0) {
         
         for(i = 0;i<=levelNo-1;i++){
-           printf("%d %d %d\n", currentNode->pathAttributeName[i], currentNode->pathAttributeValue[i] = pathAttributeValueMap[i], currentNode->pathFlag[i] = pathFlag[i]);
+           printf("level = %d, %d %d %d\n",i,  currentNode->pathAttributeName[i], currentNode->pathAttributeValue[i], currentNode->pathFlag[i]);
         }
         printf("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n");
     }
@@ -1244,7 +1244,7 @@ int main(int argc, char* argv[])
     Read(argc, argv);
     Init();
     root = GenerateDecisionTree(0, initPathAttributeName, initPathAttributeValue, initPathFlag, 0, 0);
-  //  TestMap();
+    TestMap();
 //    TestVisitTree(root); 
   //  TestLeafList(); 
 //    TestInnerNodeList();
