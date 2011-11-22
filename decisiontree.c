@@ -9,6 +9,7 @@ AttributeMap* map;
 char ***rawData = NULL;
 uint32_t **trainingData = NULL;
 uint32_t **testData = NULL;
+uint32_t **confusionMatrix = NULL;
 TreeNode* innerNodeList[MAXLEVELNUM] = { NULL };
 TreeNode* curInnerNode[MAXLEVELNUM] = { NULL };
 TreeNode* leafList = NULL;
@@ -18,9 +19,8 @@ int attributeNum;
 int numberOfTrainingRecord;
 int numberOfTestingRecord;
 int isPrintResult;
-char* trainingSetFile;
-char* testingSetFile;
-uint32_t ** confusionMatrix;
+char* trainingSetFile = NULL;
+char* testingSetFile = NULL;
 uint32_t totalLevel;
 uint32_t differValue = 60;
 void VisitTree(TreeNode*);
@@ -526,7 +526,7 @@ void OnReadData(char* filename, int flag/*training or testing*/)
     while (i <= totalnum) {
         char *ptr = fgets(buffer, n, fp);
         if (!ptr) {
-            fprintf(stderr, "please add the attribute name!!!!.\n");
+            fprintf(stderr, "please add the attribute name!!!.\n");
             exit(-1);
         }
         begin = buffer;
@@ -565,7 +565,7 @@ void OnReadData(char* filename, int flag/*training or testing*/)
                 }
                 strncpy(map[j].attributeName, begin, end - begin);
                 begin = end + 1;
-            }
+            };
             end = strchr(begin, (int)('\r'));
         
             if (!end) {
@@ -660,7 +660,7 @@ void Init()
         confusionMatrix[i] = (uint32_t*)malloc(classNum*sizeof(uint32_t));
         memset(confusionMatrix[i],0,classNum*sizeof(uint32_t));
     }
-    
+     
     //
     MallocMemory();
     ReadData();
@@ -1323,6 +1323,52 @@ void OutputRule(TreeNode* outputleaflist)
     printf("this rule number is %d:\n", ruleNum);
 }
 
+void RunDataOnDecisionTree(TreeNode* root, uint32_t* testdata, uint32_t** confusionMatrix)
+{
+    uint32_t ismatched = 0;
+    
+    TreeNode* tempNode = NULL;
+    tempNode = root->childNode;
+
+    int i,j,result;
+
+    while (tempNode != NULL)
+    {    
+        if (MatchAttribute(tempNode->selfLevel, testdata, tempNode->pathAttributeName, tempNode->pathAttributeValue, tempNode->pathFlag) != 0)
+        {
+            if (tempNode->isLeaf == 1)
+            {
+                result = tempNode->classify;
+                confusionMatrix[testdata[0]][result] ++;
+                ismatched = 1;
+                break;
+            }
+            else {
+                ismatched = 1;
+                RunDataOnDecisionTree(tempNode, testdata, confusionMatrix);
+                break;
+            }
+        }
+
+        tempNode = tempNode->siblingNode;
+    }
+
+    if (ismatched == 0)
+    {
+        result = root->majorClass;
+        confusionMatrix[testdata[0]][result]++;
+    }
+}
+
+void RunTestData(TreeNode* root)
+{
+    int i;
+    for (i = 1; i <= numberOfTestingRecord; ++i)
+    {
+        RunDataOnDecisionTree(root, testData[i], confusionMatrix);
+    }
+}
+
 int main(int argc, char* argv[])
 {
     TreeNode* root = NULL;
@@ -1332,9 +1378,11 @@ int main(int argc, char* argv[])
     Read(argc, argv);
     Init();
     root = GenerateDecisionTree(0, initPathAttributeName, initPathAttributeValue, initPathFlag, 0, 0);
-    TestMap();
+    //TestMap();
     TestVisitTree(root); 
     OutputRule(leafList);
+    
+    RunTestData(root);
   //  TestLeafList(); 
 //    TestInnerNodeList();
     return 0; 
