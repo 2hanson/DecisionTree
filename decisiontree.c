@@ -335,12 +335,6 @@ void MallocMemory()
         fprintf(stderr, "malloc memory failed, abort.\n");
         abort();
     }
-    strcpy(map[0].attributeName, "classLab");
-    for (j = 1; j <= attributeNum; j++)
-    {
-        strcpy(map[j].attributeName, "attribute");
-   //     strcat(map[j].attributeName, (i+'0'));
-    }
 }
 
 //map.attributes range from 0 to num - 1
@@ -528,7 +522,7 @@ void OnReadData(char* filename, int flag/*training or testing*/)
         totalnum = numberOfTestingRecord;
     }
     /* read all the data */
-    i = 1; 
+    i = 0; 
     while (i <= totalnum) {
         char *ptr = fgets(buffer, n, fp);
         if (!ptr) {
@@ -555,7 +549,39 @@ void OnReadData(char* filename, int flag/*training or testing*/)
             }
         }
         //attribute is range from 1 to attributenum. colcume 0 is the classLab
+        if (i == 0)
+        {
+
+            for (j = 0; j <= attributeNum-1; j++) {
+                end = strchr(begin, (int)('\t'));
+                if (!end)
+                {
+                    end = strchr(begin, (int)(' '));
+                }
+
+                if (!end) {
+                    fprintf(stderr, "line 404 tab wasn't found.\n");
+                    exit(-1);
+                }
+                strncpy(map[j].attributeName, begin, end - begin);
+                begin = end + 1;
+            }
+            end = strchr(begin, (int)('\r'));
         
+            if (!end) {
+                end = strchr(begin, (int)('\n'));
+            }
+        
+            if (end) {
+                strncpy(map[j].attributeName, begin, end - begin);
+            }
+            else {
+                strcpy(map[j].attributeName, begin);
+            }
+            
+            i++;
+            continue;
+        }
         for (j = 0; j <= attributeNum-1; j++) {
             end = strchr(begin, (int)('\t'));
             if (!end)
@@ -569,8 +595,6 @@ void OnReadData(char* filename, int flag/*training or testing*/)
             }
             memset(rawData[i][j], 0, MAXLEN);
             strncpy(rawData[i][j], begin, end - begin);
-
-           // printf("haoba:  %s \n", rawData[i][j]);
             begin = end + 1;
         }
         end = strchr(begin, (int)('\r'));
@@ -587,7 +611,6 @@ void OnReadData(char* filename, int flag/*training or testing*/)
             strcpy(rawData[i][j], begin);
         }
             
-        //printf("haoba:  %s \n", rawData[i][j]);
         i++;
     }
 
@@ -1221,20 +1244,29 @@ TreeNode* GenerateDecisionTree(uint32_t levelNo, uint32_t pathAttributeNameMap[M
 void VisitTree(TreeNode* currentNode)
 {
     int i;
-    printf("level %d\n", currentNode->selfLevel);
-    for (i = 0; i <= currentNode->selfLevel; ++i)
-    {
-        printf("nameIndex: %d; value: %d, isleaf: %d;;;;", currentNode->pathAttributeName[i], currentNode->pathAttributeValue[i], currentNode->isLeaf);
+    int level=currentNode->selfLevel;
+    for (i=0;i<=level-1;i++) printf("   ");
+    printf("level %d: ", currentNode->selfLevel);
+    if (level>0){
+        printf("%s",map[currentNode->pathAttributeName[level-1]].attributeName);
+        if (map[currentNode->pathAttributeName[level-1]].isConsecutive)
+        {
+          if (currentNode->pathFlag[level-1]==0) printf("<=");
+                else printf(">");
+        }
+        else printf("=");
+        printf("%d",currentNode->pathAttributeValue[level-1]);
     }
     printf("\n");
     if (currentNode->childNode != NULL)
     {
-      VisitTree(currentNode->childNode);  
-    }
-    
-    if (currentNode->siblingNode != NULL)
-    {
-        VisitTree(currentNode->siblingNode);
+      VisitTree(currentNode->childNode);
+      TreeNode* tempNode=currentNode->childNode;
+      while (tempNode->siblingNode != NULL)
+      {
+        VisitTree(tempNode->siblingNode);
+        tempNode=tempNode->siblingNode;
+      }
     }
 }
 
@@ -1246,14 +1278,38 @@ void OutputRule(TreeNode* outputleaflist)
     int i;
     while (tempNode != NULL)
     {
-        printf("If %s = %s",map[tempNode->pathAttributeName[0]].attributeName, map[tempNode->pathAttributeName[0]].attributes[tempNode->pathAttributeValue[0]]);
+        if (map[tempNode->pathAttributeName[0]].isConsecutive == 0)//discrete
+        {
+            printf("If %s = %s",map[tempNode->pathAttributeName[0]].attributeName, map[tempNode->pathAttributeName[0]].attributes[tempNode->pathAttributeValue[0]]);
+        }
+        else {//
+            if (tempNode->pathFlag[0] == 0) //<=
+            {
+                printf("If %s <= %d",map[tempNode->pathAttributeName[0]].attributeName, tempNode->pathAttributeValue[0]);
+            }
+            else { //>
+                printf("If %s > %d",map[tempNode->pathAttributeName[0]].attributeName, tempNode->pathAttributeValue[0]);
+            }
+        }
 
         if (tempNode->selfLevel >= 1)
         {
             for(i = 1;i<=tempNode->selfLevel-1;i++){
                 printf(" and ");
                 
-                printf("If %s = %s",map[tempNode->pathAttributeName[i]].attributeName, map[tempNode->pathAttributeName[i]].attributes[tempNode->pathAttributeValue[i]]);
+                if (map[tempNode->pathAttributeName[i]].isConsecutive == 0)//discrete
+                {
+                    printf("If %s = %s",map[tempNode->pathAttributeName[i]].attributeName, map[tempNode->pathAttributeName[i]].attributes[tempNode->pathAttributeValue[i]]);
+                }
+                else {//
+                    if (tempNode->pathFlag[i] == 0) //<=
+                    {
+                        printf("If %s <= %d",map[tempNode->pathAttributeName[i]].attributeName, tempNode->pathAttributeValue[i]);
+                    }
+                    else { //>
+                        printf("If %s > %d",map[tempNode->pathAttributeName[i]].attributeName, tempNode->pathAttributeValue[i]);
+                    }
+            }
             }
         }
         
