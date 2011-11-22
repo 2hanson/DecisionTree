@@ -1238,6 +1238,33 @@ void VisitTree(TreeNode* currentNode)
     }
 }
 
+void OutputRule(TreeNode* outputleaflist)
+{
+    TreeNode* tempNode = NULL;
+    tempNode = outputleaflist->nextLeaf;
+    int ruleNum = 1;
+    int i;
+    while (tempNode != NULL)
+    {
+        printf("If %s = %s",map[tempNode->pathAttributeName[0]].attributeName, map[tempNode->pathAttributeName[0]].attributes[tempNode->pathAttributeValue[0]]);
+
+        if (tempNode->selfLevel >= 1)
+        {
+            for(i = 1;i<=tempNode->selfLevel-1;i++){
+                printf(" and ");
+                
+                printf("If %s = %s",map[tempNode->pathAttributeName[i]].attributeName, map[tempNode->pathAttributeName[i]].attributes[tempNode->pathAttributeValue[i]]);
+            }
+        }
+        
+        printf(" then %s = %s\n",map[0].attributeName, map[0].attributes[tempNode->classify]);
+        tempNode = tempNode->nextLeaf;        
+        ++ruleNum;
+    }
+    
+    printf("this rule number is %d:\n", ruleNum);
+}
+
 int main(int argc, char* argv[])
 {
     TreeNode* root = NULL;
@@ -1249,6 +1276,7 @@ int main(int argc, char* argv[])
     root = GenerateDecisionTree(0, initPathAttributeName, initPathAttributeValue, initPathFlag, 0, 0);
     TestMap();
     TestVisitTree(root); 
+    OutputRule(leafList);
   //  TestLeafList(); 
 //    TestInnerNodeList();
     return 0; 
