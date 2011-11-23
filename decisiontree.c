@@ -917,14 +917,16 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
                     *_splitvalue = map[i].attributeValue[j];
                 }
                 else {
+                    double tempgain = 0;
                     if (spitSum != 0)
                     {
-                        double tempgain = (infoGain0 - infoSum) / spitSum;
-                        if (tempgain > infogain[i])
-                        {
-                            infogain[i] = tempgain;
-                            *_splitvalue = map[i].attributeValue[j];
-                        }
+                         tempgain = (infoGain0 - infoSum) / spitSum;
+                    }
+                        
+                    if (tempgain > infogain[i])
+                    {
+                        infogain[i] = tempgain;
+                        *_splitvalue = map[i].attributeValue[j];
                     }
                 }
             }
