@@ -1,3 +1,4 @@
+Copy at ICT
 Written by hanson(hangzhong.yu@gmail.com) at date 11/19/2011.
 
 compile command : gcc decisiontree.c -lm -o decisiontree

@@ -1,3 +1,4 @@
+//Copyright at ICT
 #define MAXLEN 100
 #define MAXLEVELNUM 200
 

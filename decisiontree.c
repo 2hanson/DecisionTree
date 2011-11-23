@@ -1,3 +1,4 @@
+//copyright at ICT
 #include "decisiontree.h"
 #include <string.h>
 #include <stdio.h>
