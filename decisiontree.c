@@ -857,8 +857,11 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
 
                 infoSum += ((double)partSum/subpartitionnum)*logSum;
             }
-
-            infogain[i] = (infoGain0 - infoSum) / spitSum;
+            
+            if (spitSum != 0)
+            {
+                infogain[i] = (infoGain0 - infoSum) / spitSum;
+            }
         }
         else {//consecutive, split to two subset(<= , and >)
             for (j = 1; j < map[i].attributeNum-1; ++j) {
@@ -907,15 +910,21 @@ uint32_t SelectAttributeByRule(uint32_t levelNo, uint32_t* pathAttributeNameMap,
                 }
 
                 if (j == 1) {
-                    infogain[i] = (infoGain0 - infoSum) / spitSum;
+                    if (spitSum != 0)
+                    {
+                        infogain[i] = (infoGain0 - infoSum) / spitSum;
+                    }
                     *_splitvalue = map[i].attributeValue[j];
                 }
                 else {
-                    double tempgain = (infoGain0 - infoSum) / spitSum;
-                    if (tempgain > infogain[i])
+                    if (spitSum != 0)
                     {
-                        infogain[i] = tempgain;
-                       *_splitvalue = map[i].attributeValue[j];
+                        double tempgain = (infoGain0 - infoSum) / spitSum;
+                        if (tempgain > infogain[i])
+                        {
+                            infogain[i] = tempgain;
+                            *_splitvalue = map[i].attributeValue[j];
+                        }
                     }
                 }
             }
