@@ -1,6 +1,6 @@
 C4.5-based implementation of the Decision Tree algorithm 
-Copyright at ICT
 Written by hanson(hangzhong.yu@gmail.com) at date 11/19/2011.
+Linkedin profile: http://cn.linkedin.com/in/hangzhongyu
 
 compile command : gcc decisiontree.c -lm -o decisiontree
 then: ./decisiontree -r trainning.txt -t testing.txt -d 3 -c 2 -s 499 -m 200 -p 0
